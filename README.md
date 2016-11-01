@@ -2,7 +2,7 @@
 
 Decorate functions in R
 
-[![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master)]
+![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master)
 
 Inspired by Python decorators the tinsel package adds roxygen-flavored 
 decorator capabilities to R. See below,
