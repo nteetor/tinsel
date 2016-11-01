@@ -1,6 +1,22 @@
+timer <- function(fun) {
+  force(fun)
+  function() {
+    el <- system.time(fun())['elapsed']
+    cat('Time elapsed: ', el, '\n', sep = '')
+  }
+}
+
+per_centum <- function(fun) {
+  force(fun)
+  function() {
+    n <- fun()
+    cat(n * 100, '%\n', sep = '')
+  }
+}
+
 #. timer
 f <- function() {
-  'Hello, world!'
+  cat('Hello, world!\n')
 }
 
 #' Roxygen!
