@@ -4,10 +4,25 @@
 \alias{presents}
 \title{Load Decorated Functions}
 \usage{
-presents(file, envir = as.environment(-1), verbose = TRUE)
+presents(file, envir, verbose = FALSE)
+}
+\arguments{
+\item{file}{A character string specifying a file path.}
+
+\item{envir}{The \code{\link{environment}} where parsed functions are
+assigned.}
+
+\item{verbose}{Defaults to \code{FALSE}, if \code{TRUE} print progress
+messages.}
 }
 \description{
-Given an \code{R} file, the presents function parses and loads decorated
-functions into the calling environment (or specified environment).
+Given an \code{R} file, this function parses and loads decorated functions
+into a specified environment.
+}
+\details{
+If any decorators are not defined or if a function is not defined properly
+none of the functions parsed are loaded.
+
+The name of the function is *very* likely to change.
 }
 
