@@ -11,13 +11,11 @@
 #'
 #' @details
 #'
-#' If any decorators are not defined or if a function is not defined properly
-#' none of the functions parsed are loaded.
-#'
-#' The name of the function is *very* likely to change.
+#' If any decorators are undefined or if a function is not defined properly
+#' none of the decorated functions parsed are loaded.
 #'
 #' @export
-presents <- function(file, envir, verbose = FALSE) {
+source_decorated <- function(file, envir, verbose = FALSE) {
   if (!file.exists(file)) {
     stop('file "', file, '" does not exist', call. = FALSE)
   }
