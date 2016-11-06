@@ -1,5 +1,4 @@
 timer <- function(fun) {
-  force(fun)
   function() {
     el <- system.time(fun())['elapsed']
     cat('Time elapsed: ', el, '\n', sep = '')
@@ -7,7 +6,6 @@ timer <- function(fun) {
 }
 
 per_centum <- function(fun) {
-  force(fun)
   function() {
     n <- fun()
     cat(n * 100, '%\n', sep = '')

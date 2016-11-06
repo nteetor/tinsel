@@ -15,16 +15,18 @@
 #' none of the decorated functions parsed are loaded.
 #'
 #' @export
-source_decorated <- function(file, envir, verbose = FALSE) {
+source_decorated <- function(file) {
   if (!file.exists(file)) {
     stop('file "', file, '" does not exist', call. = FALSE)
   }
+
+  envir <- parent.frame()
 
   src <- new.env()
   source(file = file, local = src, keep.source = TRUE)
   fileitr <- itr(file)
 
-  functs <- list()
+#  functs <- list()
   decor <- NULL
 
   while (fileitr$has_next()) {
@@ -48,7 +50,17 @@ source_decorated <- function(file, envir, verbose = FALSE) {
 
       as_text <- paste(c(decor, f), collapse = '(', sep = '')
       parens_closed <- paste0(as_text, strrep(')', length(decor)), sep = '')
-      functs[[f]] <- parens_closed
+
+      tryCatch(
+        assign(
+          f,
+          eval(parse(text = parens_closed), envir = src),
+          envir = parent.frame()
+        ),
+        error = function(e) {
+          message('Problem evaluating `', f, '`: ', e$message)
+        }
+      )
 
       decor <- NULL
     } else if (grepl('^\\s*$', line)) {
@@ -57,9 +69,5 @@ source_decorated <- function(file, envir, verbose = FALSE) {
     } else {
       decor <- NULL
     }
-  }
-
-  for (nm in names(functs)) {
-    envir[[nm]] <- eval(parse(text = functs[[nm]]), envir = src)
   }
 }

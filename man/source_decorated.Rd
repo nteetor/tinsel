@@ -4,7 +4,7 @@
 \alias{source_decorated}
 \title{Load Decorated Functions}
 \usage{
-source_decorated(file, envir, verbose = FALSE)
+source_decorated(file)
 }
 \arguments{
 \item{file}{A character string specifying a file path.}
