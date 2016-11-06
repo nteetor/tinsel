@@ -28,20 +28,18 @@ trouble of copying over the *Spaceship* methods to a new class as would have
 been necessary to create the *SpaceshipWithHyperdrive*, *MotherSpaceship*,
 and *MotherSpaceshipWithHyperdrive* classes.
 
-#### R Decoraters (and your decorators!)
+#### R Decorators (and your decorators)
 
 Let's create a function `if_error` which wraps a function `f` such that if `f()`
 would generate an error a default value is instead returned, otherwise `f()` is 
 returned.
 
 ```R
-if_error <- function(f) {
-  force(f)
-  function(default) {
+if_error <- function(f, default) {
+  function(n) {
     tryCatch(
-      f(),
-      error = function(e) {
-        message('Caught error, returning default ', default)
+      f(n),
+      warning = function(e) {
         return(default)
       }
     )
