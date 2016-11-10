@@ -29,11 +29,20 @@ source_decorated <- function(file) {
 #  functs <- list()
   decor <- NULL
 
+  # f
+  # another(f, "foo")
+  # excite(another(f, "foo"), 5)
+
   while (fileitr$has_next()) {
     line <- fileitr$get_line()
 
     if (grepl('^\\s*#\\.', line)) {
       d <- gsub('#\\.|\\s', '', line)
+
+      if (char_at(d, -1) != ')') {
+        d <- paste0('()')
+      }
+
       decor <- c(decor, d)
     } else if (grepl('<-\\s*function', line) && !is.null(decor)) {
       f <- gsub('^\\s*|\\s*<-.*$', '', line)

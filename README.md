@@ -70,10 +70,11 @@ mean_inf(c(30, 30))
 mean_inf(c('deltron', 30, 30))
 ```
 
-The special comment `#.` is used to denote a decorator for a function. In this
-case, denotes `if_error` as a decorator of the function `mean`. `mean` is passed
-as the first argument to `if_error` and `Inf` is passed as the second argument.
-The result of decorating `mean` with `if_error` is assigned to `mean_inf`.
+The special comment `#.` is used to denote a decorator for a function. In this 
+example, `#. if_error` denotes `if_error` as the decorator of the decoratee
+`mean`. `mean` is passed as the first argument to `if_error` and `Inf` is passed
+as the second argument. The result of decorating `mean` with `if_error` is
+assigned to `mean_inf`.
 
 ### Installing tinsel
 
