@@ -47,23 +47,26 @@ source_decorated <- function(file) {
     } else if (grepl('<-\\s*function', line) && !is.null(decor)) {
       f <- gsub('^\\s*|\\s*<-.*$', '', line)
 
-      if (!exists(f, envir = src, inherits = FALSE) && verbose) {
+      if (!exists(f, envir = src, inherits = FALSE)) {
         message('skipping function ', f)
       }
 
-      for (dfunc in decor) {
-        if (!exists(dfunc, envir = src, inherits = FALSE)) {
-          stop('no definition found for decorator `', dfunc, '`', call. = FALSE)
+      as_text <- paste0(f, '(', pairstring(src[[f]]), ')')
+      for (d in decor) {
+        if (!exists(d, envir = src, inherits = FALSE)) {
+          stop('no definition found for decorator `', d, '`', call. = FALSE)
         }
+        i <- first_of(d, '(')
+        as_text <- c(substr(d, 1, i), as_text, substr(d, i + i, nchar(d)))
       }
 
-      as_text <- paste(c(decor, f), collapse = '(', sep = '')
-      parens_closed <- paste0(as_text, strrep(')', length(decor)), sep = '')
+#      as_text <- paste(c(decor, f), collapse = '(', sep = '')
+#      parens_closed <- paste0(as_text, strrep(')', length(decor)), sep = '')
 
       tryCatch(
         assign(
           f,
-          eval(parse(text = parens_closed), envir = src),
+          eval(parse(text = as_text), envir = src),
           envir = parent.frame()
         ),
         error = function(e) {
