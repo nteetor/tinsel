@@ -15,12 +15,10 @@
 #' none of the decorated functions parsed are loaded.
 #'
 #' @export
-source_decorated <- function(file) {
+source_decoratees <- function(file) {
   if (!file.exists(file)) {
     stop('file "', file, '" does not exist', call. = FALSE)
   }
-
-  envir <- parent.frame()
 
   src <- new.env()
   source(file = file, local = src, keep.source = TRUE)
@@ -51,22 +49,28 @@ source_decorated <- function(file) {
         message('skipping function ', f)
       }
 
-      as_text <- paste0(f, '(', pairstring(src[[f]]), ')')
+      as_text <- paste0(f) #, '(', pairstring(src[[f]]), ')')
       for (d in decor) {
-        if (!exists(d, envir = src, inherits = FALSE)) {
-          stop('no definition found for decorator `', d, '`', call. = FALSE)
+        split_at <- first_of(d, '(') - 1
+        dname <- substr(d, 1, split_at)
+        dparens <- substr(d, split_at + 2, nchar(d))
+
+        if (!exists(dname, envir = src, inherits = FALSE)) {
+          stop('no definition found for decorator `', dname, '`', call. = FALSE)
         }
-        i <- first_of(d, '(')
-        as_text <- c(substr(d, 1, i), as_text, substr(d, i + i, nchar(d)))
+
+        as_text <- c(dname, '(', as_text, ', ', dparens)
       }
 
-#      as_text <- paste(c(decor, f), collapse = '(', sep = '')
+      text_call <- paste(as_text, collapse = '', sep = '')
 #      parens_closed <- paste0(as_text, strrep(')', length(decor)), sep = '')
+
+      print(text_call)
 
       tryCatch(
         assign(
           f,
-          eval(parse(text = as_text), envir = src),
+          eval(parse(text = text_call), envir = src),
           envir = parent.frame()
         ),
         error = function(e) {
