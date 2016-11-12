@@ -1,14 +1,14 @@
 timer <- function(fun) {
   function() {
-    el <- system.time(fun())['elapsed']
-    cat('Time elapsed: ', el, '\n', sep = '')
+    el <- system.time(fval <- fun())['elapsed']
+    cat('Time elapsed: ~', el, ' seconds\n', sep = '')
+    fval
   }
 }
 
 per_centum <- function(fun) {
   function() {
-    n <- fun()
-    cat(n * 100, '%\n', sep = '')
+    paste0(fun() * 100, '%')
   }
 }
 
@@ -26,6 +26,7 @@ g <- function() {
   5:1
 }
 
+#. timer
 #. per_centum
 h <- function() {
   0.30 * 1.01

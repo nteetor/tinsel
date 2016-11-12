@@ -7,7 +7,7 @@ char_at <- function(.string, i) {
 first_of <- function(.string, c) {
   if (!grepl(c, .string, fixed = TRUE)) return(-1)
   i <- 1
-  while (char_at(.string, i) != c) i <- i + 1
+  while (i < nchar(.string) && char_at(.string, i) != c) i <- i + 1
   i
 }
 

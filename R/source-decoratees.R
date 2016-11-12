@@ -38,7 +38,7 @@ source_decoratees <- function(file) {
       d <- gsub('#\\.|\\s', '', line)
 
       if (char_at(d, -1) != ')') {
-        d <- paste0('()')
+        d <- paste0(d, '()')
       }
 
       decor <- c(decor, d)
@@ -51,21 +51,23 @@ source_decoratees <- function(file) {
 
       as_text <- paste0(f) #, '(', pairstring(src[[f]]), ')')
       for (d in decor) {
-        split_at <- first_of(d, '(') - 1
-        dname <- substr(d, 1, split_at)
-        dparens <- substr(d, split_at + 2, nchar(d))
+        split_at <- first_of(d, '(')
+        dname <- substr(d, 1, split_at - 1)
+        dargs <- substr(d, split_at + 1, nchar(d))
+        if (!grepl('^\\s*\\)\\s*$', dargs)) {
+          dargs <- paste(',', dargs)
+        }
 
         if (!exists(dname, envir = src, inherits = FALSE)) {
           stop('no definition found for decorator `', dname, '`', call. = FALSE)
         }
 
-        as_text <- c(dname, '(', as_text, ', ', dparens)
+        as_text <- c(dname, '(', as_text, dargs)
       }
 
-      text_call <- paste(as_text, collapse = '', sep = '')
-#      parens_closed <- paste0(as_text, strrep(')', length(decor)), sep = '')
+      # I don't like this, but it's a hacky work around when t
 
-      print(text_call)
+      text_call <- paste(as_text, collapse = '', sep = '')
 
       tryCatch(
         assign(
