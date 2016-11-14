@@ -4,8 +4,9 @@
 \name{tinsel-package}
 \alias{tinsel}
 \alias{tinsel-package}
-\title{What the Package Does (one line, title case)}
+\title{Decorators for R Functions}
 \description{
-What the package does (one paragraph).
+Instead of nesting function calls, annotate and transform
+functions using "#." comments.
 }
 

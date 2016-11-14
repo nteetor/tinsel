@@ -2,7 +2,8 @@
 
 Decorating functions in R.
 
-![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master)
+![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master) [![codecov](https://codecov.io/gh/nteetor/tinsel/branch/master/graph/badge.svg)](https://codecov.io/gh/nteetor/tinsel)
+
 
 The tinsel package adds a roxygen-flavored decorator to R. Simply put, 
 decorators are a means of building upon the functionality of a function (boo...)
@@ -86,7 +87,22 @@ still in development.
 devtools::install_github('nteetor/tinsel')
 ```
 
-Check out the `source_decorated` function to get started.
+Check out the `source_decoratees` function to get started. 
+
+### RStudio Addin
+
+If you are working in RStudio the tinsel package includes an addin for the core 
+function `source_decoratees`. To bind the addin to a keyboard shortcut in
+RStudio navigate to **Tools** > **Addins** > **Browse Addins** > **Keyboard 
+Shorcuts**. For more information about the keyboard shortcuts checkout the 
+RStudio [support 
+page](https://support.rstudio.com/hc/en-us/articles/206382178-Customizing-Keyboard-Shortcuts).
+If you choose to setup a keyboard shortcut for the addin I recommend
+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> since 
+<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> or 
+<kbd>CTRL</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> is the source active file 
+shortcut. The end result is you can quickly load your decorated functions like
+you would all functions in your active file with `source`.
 
 ---
 

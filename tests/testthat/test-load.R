@@ -4,7 +4,7 @@ context('testing sourcing')
 
 expect_exists <- function(x) {
   e <- parent.frame()
-  defined <- function(x) exists(x, envir = e, inherits = FALSE)
+  defined <- function(v) exists(v, envir = e, inherits = FALSE)
 
   eval(bquote(expect_true(.(x) %is% defined)))
 }
@@ -15,15 +15,23 @@ test_that('error when missing definition', {
 
 test_that('non-decorated functions skipped', {
   source_decoratees('../testfiles/simple-functions.R')
-  expect_true(!exists('g', inherits = FALSE))
+  expect_true(!exists('ignore', inherits = FALSE))
 })
 
 test_that('decoratees loaded', {
   source_decoratees('../testfiles/simple-functions.R')
-  expect_exists('f')
-  expect_is(f, 'function')
-  expect_exists('h')
-  expect_is(h, 'function')
+  expect_exists('fib')
+  expect_is(fib, 'function')
+  expect_is(fib, 'decorated')
+  expect_exists('progress')
+  expect_is(progress, 'function')
+  expect_is(progress, 'decorated')
+})
+
+test_that('correct order of decorators', {
+  source_decoratees('../testfiles/simple-functions.R')
+  progress_decorators <- names(attr(progress, 'decorators', exact = TRUE))
+  expect_equal(progress_decorators, c('per_centum', 'timer'))
 })
 
 test_that('pass arguments to decoratees', {

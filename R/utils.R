@@ -11,9 +11,15 @@ first_of <- function(.string, c) {
   i
 }
 
-pairstring <- function(f) {
-  x <- vapply(formals(f), as.character, character(1))
-  x <- paste(names(x), x, sep = '=')
-  x <- gsub('=$', '', x)
-  paste(x, collapse = ', ', sep = '')
+re_search <- function(.string, pattern) {
+  bounds <- regexpr(pattern, .string)
+  if (bounds[[1]] != -1) {
+    substr(.string, bounds[[1]], bounds[[1]] + attr(bounds, 'match.length') - 1)
+  } else {
+    NULL
+  }
 }
+
+cat0 <- function(...) cat(..., sep = '')
+
+is.try_error <- function(x) inherits(x, 'try-error')

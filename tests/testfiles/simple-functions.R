@@ -1,33 +1,54 @@
 timer <- function(fun) {
-  function() {
-    el <- system.time(fval <- fun())['elapsed']
-    cat('Time elapsed: ~', el, ' seconds\n', sep = '')
+  function(...) {
+    el <- system.time(fval <- fun(...))['elapsed']
+    cat('Time elapsed: ~ ', el, ' seconds\n', sep = '')
     fval
   }
 }
 
 per_centum <- function(fun) {
   function() {
-    paste0(fun() * 100, '%')
+    paste0(round(fun() * 100, 2), '%')
   }
 }
 
 #. timer
-f <- function() {
-  cat('Hello, world!\n')
+fib <- function(n) {
+  round(((1.61805 ** (1:n - 1)) + (1.61805 ** (1:n - 2))) / sqrt(5))
 }
 
-#' Roxygen!
+#' An Undecorated Function
 #'
-#' ignore me
+#' This function is ignored by \link{source_decoratees}.
 #'
-g <- function() {
-  #. confusion
-  5:1
+#' @return
+#'
+#' This function throws an error.
+#'
+#' @export
+ignore <- function() {
+  stop('I was not ignored.', call. = FALSE)
 }
 
 #. timer
 #. per_centum
-h <- function() {
-  0.30 * 1.01
+progress <- function() {
+  #. timer
+  len <- 20
+  msgs <- vapply(
+    seq_len(len),
+    function(l) paste0('[', strrep('=', l), strrep(' ', len - l), ']'),
+    character(1)
+  )
+
+  cat(msgs[1], sep = '')
+  for (m in msgs[-1]) {
+    Sys.sleep(0.1)
+    if (runif(1) <= 0.25) break
+    cat(strrep('\b', nchar(m)), m, sep = '')
+  }
+  cat('\n')
+
+  which(m == msgs) / length(msgs)
 }
+

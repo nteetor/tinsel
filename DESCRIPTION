@@ -1,11 +1,12 @@
 Package: tinsel
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Title: Decorators for R Functions
+Version: 0.0.0.2
+Authors@R: person("Nathan", "Teetor", email = "nathanteetor@gmail.com", role = c("aut", "cre"))
+Description: Instead of nesting function calls, annotate and transform 
+    functions using "#." comments.
 Depends:
     R (>= 3.3.1)
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:

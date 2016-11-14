@@ -21,15 +21,10 @@ source_decoratees <- function(file) {
   }
 
   src <- new.env()
-  source(file = file, local = src, keep.source = TRUE)
+  source(file = file, local = src, keep.source = FALSE)
   fileitr <- itr(file)
 
-#  functs <- list()
   decor <- NULL
-
-  # f
-  # another(f, "foo")
-  # excite(another(f, "foo"), 5)
 
   while (fileitr$has_next()) {
     line <- fileitr$get_line()
@@ -44,13 +39,14 @@ source_decoratees <- function(file) {
       decor <- c(decor, d)
     } else if (grepl('<-\\s*function', line) && !is.null(decor)) {
       f <- gsub('^\\s*|\\s*<-.*$', '', line)
+      decor <- rev(decor)
 
       if (!exists(f, envir = src, inherits = FALSE)) {
         message('skipping function ', f)
       }
 
-      as_text <- paste0(f)
-      for (d in rev(decor)) {
+      as_text <- f
+      for (d in decor) {
         split_at <- first_of(d, '(')
         dname <- substr(d, 1, split_at - 1)
         dargs <- substr(d, split_at + 1, nchar(d))
@@ -58,32 +54,36 @@ source_decoratees <- function(file) {
           dargs <- paste(',', dargs)
         }
 
-        if (!exists(dname, envir = src, inherits = FALSE)) {
+        if (!exists(dname, envir = src)) {
           stop('no definition found for decorator `', dname, '`', call. = FALSE)
         }
 
         as_text <- c(dname, '(', as_text, dargs)
       }
 
-      # I don't like this, but it's a hacky work around when t
-
       text_call <- paste(as_text, collapse = '', sep = '')
 
-      tryCatch(
-        assign(
-          f,
-          eval(parse(text = text_call), envir = src),
-          envir = parent.frame()
-        ),
+      feval <- tryCatch(
+        eval(parse(text = text_call), envir = src),
         error = function(e) {
           message('Problem evaluating `', f, '`: ', e$message)
+          NULL
         }
       )
+
+      if (!is.null(feval)) {
+        class(feval) <- c('decorated', class(feval))
+        attr(feval, 'decoratee') <- get0(f, src)
+        dnames <- vapply(decor, re_search, character(1), '^\\s*[^(]+')
+        attr(feval, 'decorators') <- setNames(lapply(dnames, get0, src), dnames)
+        assign(f, feval, parent.frame())
+      }
 
       decor <- NULL
     } else if (grepl('^\\s*$', line)) {
       # white space is frowned upon, but for now is accepted between decorator
       # lines
+
     } else {
       decor <- NULL
     }
