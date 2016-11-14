@@ -49,8 +49,8 @@ source_decoratees <- function(file) {
         message('skipping function ', f)
       }
 
-      as_text <- paste0(f) #, '(', pairstring(src[[f]]), ')')
-      for (d in decor) {
+      as_text <- paste0(f)
+      for (d in rev(decor)) {
         split_at <- first_of(d, '(')
         dname <- substr(d, 1, split_at - 1)
         dargs <- substr(d, split_at + 1, nchar(d))
