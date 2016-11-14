@@ -100,9 +100,9 @@ page](https://support.rstudio.com/hc/en-us/articles/206382178-Customizing-Keyboa
 If you choose to setup a keyboard shortcut for the addin I recommend
 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> since 
 <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> or 
-<kbd>CTRL</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> is the source active file 
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> is the source active file 
 shortcut. The end result is you can quickly load your decorated functions like
-you would all functions in your active file with `source`.
+you would source all functions from the active file.
 
 ---
 
