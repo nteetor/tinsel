@@ -1,6 +1,6 @@
 Package: tinsel
 Title: Transform Functions using Decorators
-Version: 0.0.0.2
+Version: 0.0.1
 Authors@R: person("Nathan", "Teetor", email = "nathanteetor@gmail.com", role = c("aut", "cre"))
 Description: Instead of nesting function calls, annotate and transform 
     functions using "#." comments.
