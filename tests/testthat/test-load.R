@@ -43,3 +43,19 @@ test_that('pass arguments to decoratees', {
   expect_silent(source_decoratees('../testfiles/have-args.R'))
   expect_true(exists('my_name'))
 })
+
+test_that('decorated function reference sourced', {
+  source_decoratees('../testfiles/simple-functions.R')
+  expect_exists('mean_inf')
+  expect_is(mean_inf, 'decorated')
+  expect_equal(mean_inf('100'), Inf)
+  expect_equal(mean_inf(c(25, 50, 100)), mean(c(25, 50, 100)))
+  expect_false(exists('bare_variable'))
+})
+
+test_that('multi-line function declaration sourced', {
+  source_decoratees('../testfiles/simple-functions.R')
+  expect_exists('one_fish')
+  expect_is(one_fish, 'decorated')
+  expect_equal(one_fish(), 'red fish, blue fish')
+})

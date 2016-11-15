@@ -42,8 +42,14 @@ source_decoratees <- function(file) {
       }
 
       decor <- c(decor, d)
-    } else if (grepl('^(?!\\s*#).*<-\\s*function', line, perl = TRUE) && !is.null(decor)) {
+    } else if (grepl('^(?!\\s*#).*<-', line, perl = TRUE) && !is.null(decor)) {
       f <- gsub('^\\s*|\\s*<-.*$', '', line)
+      # this condition was added to allow for multi-line assignment and
+      # instances where a function is defined, then referred to and decorated.
+      if (!is.function(get0(f, src))) {
+        next
+      }
+
       decor <- rev(decor)
 
       as_text <- f

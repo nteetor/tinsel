@@ -36,14 +36,13 @@ would generate an error a default value is instead returned, otherwise `f()` is
 returned.
 
 ```R
-if_error <- function(f, default) {
-  function(n) {
+if_warning <- function(f, default) {
+  function(...) {
     tryCatch(
-      f(n),
-      warning = function(e) {
-        return(default)
-      }
-    )
+      f(...),
+      warning = function(w) {
+        default
+      })
   }
 }
 ```
@@ -52,7 +51,7 @@ Below we make use of our new function. We'll decorate the default `mean`
 function, so instead of generating an error the function returns `Inf`. Great!
 
 ```R
-mean_inf <- if_error(mean, Inf)
+mean_inf <- if_warning(mean, Inf)
 
 # give it a try!
 mean_inf(1:5)

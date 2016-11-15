@@ -52,6 +52,25 @@ progress <- function() {
   which(m == msgs) / length(msgs)
 }
 
-#. per_centum
-mean_centum <- mean
+if_warning <- function(f, default) {
+  function(...) {
+    tryCatch(
+      f(...),
+      warning = function(e) {
+        default
+      })
+  }
+}
+
+#. if_warning(Inf)
+mean_inf <- mean
+
+bare_variable <- 'necessities'
+
+#. if_warning('whoops!')
+one_fish <-
+  function(two_fish = NULL) {
+    'red fish, blue fish'
+  }
+
 
