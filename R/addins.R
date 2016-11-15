@@ -1,4 +1,8 @@
 source_decoratees_addin <- function() {
+  if (!requireNamespace('rstudioapi')) {
+    stop('please install the rstudioapi package', call. = FALSE)
+  }
+
   active <- tryCatch(
     rstudioapi::getSourceEditorContext(),
     error = function(e) {

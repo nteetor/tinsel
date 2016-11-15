@@ -82,7 +82,7 @@ source_decoratees <- function(file) {
         class(feval) <- c('decorated', class(feval))
         attr(feval, 'decoratee') <- get0(f, src)
         dnames <- vapply(decor, re_search, character(1), '^\\s*[^(]+')
-        attr(feval, 'decorators') <- setNames(lapply(dnames, get0, src), dnames)
+        attr(feval, 'decorators') <- set_names(lapply(dnames, get0, src), dnames)
         assign(f, feval, parent.frame())
       }
 
