@@ -5,9 +5,9 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 note
+0 errors | 0 warnings | 1 note
 
-* This is a new release.
+* This is a new release. (NOTE)
 
 ## Reverse dependencies
 
@@ -15,8 +15,8 @@ This is a new release, so there are no reverse dependencies.
 
 ---
 
-(N/A) I have run R CMD check on the 0 downstream dependencies. 
+[N/A] I have run R CMD check on the 0 downstream dependencies. 
   
-(N/A) No failures to report as this is a new release.
+[N/A] No failures to report as this is a new release.
 
-(N/A) All revdep maintainers were notified of the release.
+[N/A] All revdep maintainers were notified of the release.
