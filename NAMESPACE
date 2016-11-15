@@ -3,4 +3,5 @@
 S3method(print,decorated)
 export(decorators)
 export(is.decorated)
+export(original)
 export(source_decoratees)

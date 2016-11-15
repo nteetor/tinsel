@@ -9,8 +9,13 @@ expect_exists <- function(x) {
   eval(bquote(expect_true(.(x) %is% defined)))
 }
 
-test_that('error when missing definition', {
+test_that('error for bad path', {
+  expect_error(source_decoratees('path/to/nowhere.R'))
+})
+
+test_that('error when missing definitions', {
   expect_error(source_decoratees('../testfiles/missing-definitions.R'), 'timer')
+  expect_error(source_decoratees('../testfiles/bad-definition.R'), 'problem sourcing')
 })
 
 test_that('non-decorated functions skipped', {

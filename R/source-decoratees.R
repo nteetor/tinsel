@@ -1,18 +1,18 @@
-#' Load Decorated Functions
+#' Read and Parse Decoratees from a File
 #'
-#' Given an \code{R} file, this function parses and loads decorated functions
-#' into a specified environment.
+#' Given a file, \code{source_decoratees} reads and parses decorated functions
+#' (decoratees) into the calling environment.
 #'
 #' @param file A character string specifying a file path.
-#' @param envir The \code{\link{environment}} where parsed functions are
-#'   assigned.
-#' @param verbose Defaults to \code{FALSE}, if \code{TRUE} print progress
-#'   messages.
 #'
 #' @details
 #'
-#' If any decorators are undefined or if a function is not defined properly
-#' none of the decorated functions parsed are loaded.
+#' Malformed decoratees are ignored and a message will alert the user a function
+#' has been skipped. However, an error is raised if a decorator is undefined.
+#'
+#' If you are working within RStudio the "Source Active File Decoratees" addin
+#' effectively allows you to bind \code{source_decoratees} to a keyboard
+#' shorcut. The addin is found under \bold{Tools} > \bold{Addins}.
 #'
 #' @export
 source_decoratees <- function(file) {
@@ -21,9 +21,14 @@ source_decoratees <- function(file) {
   }
 
   src <- new.env()
-  source(file = file, local = src, keep.source = FALSE)
-  fileitr <- itr(file)
+  tryCatch(
+    source(file = file, local = src, keep.source = FALSE),
+    error = function(e) {
+      stop('problem sourcing ', file, ', ', e$message, call. = FALSE)
+    }
+  )
 
+  fileitr <- file_itr(file)
   decor <- NULL
 
   while (fileitr$has_next()) {
@@ -37,13 +42,9 @@ source_decoratees <- function(file) {
       }
 
       decor <- c(decor, d)
-    } else if (grepl('<-\\s*function', line) && !is.null(decor)) {
+    } else if (grepl('^(?!\\s*#).*<-\\s*function', line, perl = TRUE) && !is.null(decor)) {
       f <- gsub('^\\s*|\\s*<-.*$', '', line)
       decor <- rev(decor)
-
-      if (!exists(f, envir = src, inherits = FALSE)) {
-        message('skipping function ', f)
-      }
 
       as_text <- f
       for (d in decor) {
