@@ -10,7 +10,7 @@ decorators are a means of building upon the functionality of a function (boo...)
 *f* without modifying the code for *f*. The benefit of decorators is more
 clearly illustrated using object classes.
 
-### What're decorators all about?
+### What are decorators all about?
 
 Say we develop a *Spaceship* class. In addition to our standard *Spaceship*
 class, we also need a class for a spaceship with a hyperdrive. So we develop a 
@@ -29,7 +29,7 @@ trouble of copying over the *Spaceship* methods to a new class as would have
 been necessary to create the *SpaceshipWithHyperdrive*, *MotherSpaceship*,
 and *MotherSpaceshipWithHyperdrive* classes.
 
-### R Decorators (and your decorators)
+### R Decorators (and *your* decorators)
 
 Let's create a function `if_error` which wraps a function `f` such that if `f()`
 would generate an error a default value is instead returned, otherwise `f()` is 
