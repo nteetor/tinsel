@@ -1,15 +1,15 @@
 Package: tinsel
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Title: Decorators for R Functions
+Version: 0.0.0.2
+Authors@R: person("Nathan", "Teetor", email = "nathanteetor@gmail.com", role = c("aut", "cre"))
+Description: Instead of nesting function calls, annotate and transform 
+    functions using "#." comments.
+License: MIT + file LICENSE
+URL: https://github.com/nteetor/tinsel
+BugReports: https://github.com/nteetor/tinsel/issues
+Encoding: UTF-8
+RoxygenNote: 5.0.1
 Depends:
     R (>= 3.3.1)
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-Imports:
-    R6
 Suggests:
     testthat
-RoxygenNote: 5.0.1

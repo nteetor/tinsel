@@ -1,0 +1,4 @@
+Name: Source Active File Decoratees
+Description: Source decoratees (decorated functions) from the active file.
+Binding: source_decoratees_addin
+Interactive: false
