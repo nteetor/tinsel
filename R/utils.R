@@ -20,6 +20,11 @@ re_search <- function(.string, pattern) {
   }
 }
 
+set_names <- function(obj, nm) {
+  names(obj) <- nm
+  obj
+}
+
 cat0 <- function(...) cat(..., sep = '')
 
 is.try_error <- function(x) inherits(x, 'try-error')

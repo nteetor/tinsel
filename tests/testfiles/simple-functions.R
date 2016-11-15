@@ -74,3 +74,23 @@ one_fish <-
   }
 
 
+ # emphasize text
+ emph <- function(f, m = '**') {
+   function(...) {
+     if (is.na(m[2])) m <- rep(m, 2)
+     paste(m[1], f(...), m[2])
+   }
+ }
+
+ #. emph
+ my_name <- function() 'Nathan Teetor'
+
+ my_name()
+
+ #. emph(c('<b>', '</b>'))
+ cats <- function(n) {
+   paste(rep('cats', n), collapse = ' ')
+ }
+
+ cats(5)
+
