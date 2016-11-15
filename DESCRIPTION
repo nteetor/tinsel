@@ -1,5 +1,5 @@
 Package: tinsel
-Title: Decorators for R Functions
+Title: Transform Functions using Decorators
 Version: 0.0.0.2
 Authors@R: person("Nathan", "Teetor", email = "nathanteetor@gmail.com", role = c("aut", "cre"))
 Description: Instead of nesting function calls, annotate and transform 
