@@ -1,46 +1,25 @@
-itr <- function(file) {
-  FileIterator$new(file)
-}
+file_itr <- function(file) {
+  if (!file.exists(file)) {
+    stop('could not find file ', file, call. = FALSE)
+  }
+  self <- new.env(parent = baseenv())
+  self$contents <- readLines(file)
+  self$cursor <- 1
+  self$FILE_NAME <- basename(file)
 
-FileIterator <- R6::R6Class(
-  classname = 'itr',
-  private = list(
-    contents = NULL,
-    cursor = NULL
-  ),
-  public = list(
-    FILE_NAME = NULL,
-    initialize = function(file) {
-      if (!file.exists(file)) {
-        stop('could not find ', file, call. = FALSE)
-      }
-      self$FILE_NAME <- basename(file)
-      private$contents <- readLines(file)
-      private$cursor <- 1
-      self
-    },
-    num_lines = function() {
-      length(private$contents)
-    },
-    all_lines = function() {
-      private$contents
-    },
-    get_line = function() {
-      if (private$cursor > length(private$contents)) {
-        stop('at end of file', call. = FALSE)
-      }
-      line <- private$contents[private$cursor]
-      private$cursor <- private$cursor + 1
-      line
-    },
-    prev_line = function() {
-      if (private$cursor <= 1) {
-        stop('at head of file', call. = FALSE)
-      }
-      private$contents[private$cursor - 1]
-    },
-    has_next = function() {
-      private$cursor <= length(private$contents)
+  self$get_line <- function() {
+    if (self$cursor > length(self$contents)) {
+      stop('at end of file', call. = FALSE)
     }
-  )
-)
+    line <- self$contents[self$cursor]
+    self$cursor <- self$cursor + 1
+    line
+  }
+  self$has_next <- function() {
+    self$cursor <= length(self$contents)
+  }
+
+  class(self) <- c('file_itr', class(self))
+
+  self
+}

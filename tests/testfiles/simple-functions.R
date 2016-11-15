@@ -52,3 +52,6 @@ progress <- function() {
   which(m == msgs) / length(msgs)
 }
 
+#. per_centum
+mean_centum <- mean
+

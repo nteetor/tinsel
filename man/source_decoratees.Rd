@@ -2,25 +2,23 @@
 % Please edit documentation in R/source-decoratees.R
 \name{source_decoratees}
 \alias{source_decoratees}
-\title{Load Decorated Functions}
+\title{Read and Parse Decoratees from a File}
 \usage{
 source_decoratees(file)
 }
 \arguments{
 \item{file}{A character string specifying a file path.}
-
-\item{envir}{The \code{\link{environment}} where parsed functions are
-assigned.}
-
-\item{verbose}{Defaults to \code{FALSE}, if \code{TRUE} print progress
-messages.}
 }
 \description{
-Given an \code{R} file, this function parses and loads decorated functions
-into a specified environment.
+Given a file, \code{source_decoratees} reads and parses decorated functions
+(decoratees) into the calling environment.
 }
 \details{
-If any decorators are undefined or if a function is not defined properly
-none of the decorated functions parsed are loaded.
+Malformed decoratees are ignored and a message will alert the user a function
+has been skipped. However, an error is raised if a decorator is undefined.
+
+If you are working within RStudio the "Source Active File Decoratees" addin
+effectively allows you to bind \code{source_decoratees} to a keyboard
+shorcut. The addin is found under \bold{Tools} > \bold{Addins}.
 }
 
