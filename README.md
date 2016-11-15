@@ -5,10 +5,10 @@ Decorating functions in R.
 ![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master) [![codecov](https://codecov.io/gh/nteetor/tinsel/branch/master/graph/badge.svg)](https://codecov.io/gh/nteetor/tinsel)
 
 
-The tinsel package adds a roxygen-flavored decorator to R. Simply put, 
-decorators are a means of building upon the functionality of a function (boo...)
-*f* without modifying the code for *f*. The benefit of decorators is more
-clearly illustrated using object classes.
+The tinsel package adds function decorators to R using a special `#.` comment. 
+Decorators are a means of transforming a function without needing to rewrite 
+the function. They allow for easy integration of new code onto existing code. These benefits
+are illustrated below with an example about object classes.
 
 ### What are decorators all about?
 
@@ -31,8 +31,8 @@ and *MotherSpaceshipWithHyperdrive* classes.
 
 ### R Decorators (and *your* decorators)
 
-Let's create a function `if_error` which wraps a function `f` such that if `f()`
-would generate an error a default value is instead returned, otherwise `f()` is 
+Let's create a function `if_warning` which wraps a function `f` such that if `f(...)`
+would generate a warning a default value is returned instead, otherwise `f(...)` is 
 returned.
 
 ```R
@@ -47,8 +47,8 @@ if_warning <- function(f, default) {
 }
 ```
 
-Below we make use of our new function. We'll decorate the default `mean`
-function, so instead of generating an error the function returns `Inf`. Great!
+Now let's transform the default `mean` function, so instead of generating a 
+warning the function returns `Inf`. Great!
 
 ```R
 mean_inf <- if_warning(mean, Inf)
@@ -58,28 +58,27 @@ mean_inf(1:5)
 mean_inf(c(1, 'two', 3))
 ```
 
-Now we'll see where the roxygen-flavoring comes in. The above code can be 
-rewritten in the following format,
+Here is where the special comment `#.` comes in. The above code can be 
+rewritten as the following,
 
 ```R
-#. if_error(Inf)
+#. if_warning(Inf)
 mean_inf <- mean
-
-# please give this one a try too
-mean_inf(c(30, 30))
-mean_inf(c('deltron', 30, 30))
 ```
 
-The special comment `#.` is used to denote a decorator for a function. In this 
-example, `#. if_error` denotes `if_error` as the decorator of the decoratee
-`mean`. `mean` is passed as the first argument to `if_error` and `Inf` is passed
-as the second argument. The result of decorating `mean` with `if_error` is
+The special comment `#.` is used to denote a function decorator. In this 
+example, `#. if_warning` denotes `if_warning` as the decorator of the decoratee
+`mean`. `mean` is passed as the first argument to `if_warning` and `Inf`
+as the second argument. The result of transforming `mean` with `if_warning` is
 assigned to `mean_inf`.
+
+In order to see the decorator annotation example in action, save the above code 
+in a file, source the file using `source_decoratees`, and then call `mean_inf` 
+once more. (Gentle reminder, the output is expected to be the same)
 
 ### Installing tinsel
 
-You can install this package using devtools, but please be aware the package is
-still in development.
+You can install this package using devtools.
 
 ```R
 # install.packages('devtools')
@@ -98,8 +97,8 @@ RStudio [support
 page](https://support.rstudio.com/hc/en-us/articles/206382178-Customizing-Keyboard-Shortcuts).
 If you choose to setup a keyboard shortcut for the addin I recommend
 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> since 
-<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> or 
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> is the source active file 
+<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> (or 
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> on Linux and Windows) is the source active file 
 shortcut. The end result is you can quickly load your decorated functions like
 you would source all functions from the active file.
 
