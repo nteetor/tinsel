@@ -1,43 +1,21 @@
-#' Decorated Functions
-#'
-#' Check if a function is decorated.
-#'
-#' @param f A function.
-#'
-#' @return
-#'
-#' Returns \code{TRUE} or \code{FALSE} depending on if the object \code{f} is
-#' decorated.
-#'
-#' @export
-is.decorated <- function(f) {
-  inherits(f, 'decorated')
-}
-
-#' Print a Decorated Function
-#'
-#' The \code{print.decorated} function naively prints \code{x} as a function. In
-#' reality, the function printed may be the final of any number of decorators to
-#' a decoratee. To get the original function or the decorators wrapping it use
-#' \code{\link{original}} and \code{\link{decorators}}.
-#'
-#' @param x A decorated function.
-#' @param \ldots Additional arguments for next print method.
-#'
-#' @export
-print.decorated <- function(x, ...) {
-  NextMethod('print')
-}
-
 #' Get Function Decorators or Original Function
 #'
-#' These functions allow programmers to access the decorators of a function or
-#' the original decoratee function.
+#' Get the decorators of a function or the original decoratee function from a
+#' decorated function object.
 #'
 #' @param f A decorated function.
 #'
 #' @name decorators
 #' @export
+#' @examples
+#' source_decoratees(tinsel_example('attributes.R'))
+#'
+#' # sourced from the 'attributes.R' example file
+#' selector1
+#'
+#' # get a list of decorators wrapping a function
+#' decorators(selector1)
+#'
 decorators <- function(f) {
   stopifnot(is.function(f), is.decorated(f))
 
@@ -46,6 +24,11 @@ decorators <- function(f) {
 
 #' @rdname decorators
 #' @export
+#' @examples
+#' # get the original decoratee function of the
+#' # decorated `selector1` function
+#' original(selector1)
+#'
 original <- function(f) {
   stopifnot(is.function(f), is.decorated(f))
 
