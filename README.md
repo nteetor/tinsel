@@ -78,7 +78,13 @@ once more. (Gentle reminder, the output is expected to be the same)
 
 ### Installing tinsel
 
-You can install this package using devtools.
+tinsel is now available on CRAN.
+
+```R
+install.packages('tinsel')
+```
+
+You can install the latest version of tinsel using devtools (currently even with version 0.0.1 on CRAN).
 
 ```R
 # install.packages('devtools')
