@@ -28,3 +28,5 @@ set_names <- function(obj, nm) {
 cat0 <- function(...) cat(..., sep = '')
 
 is.try_error <- function(x) inherits(x, 'try-error')
+
+is.connection <- function(x) inherits(x, 'connection')

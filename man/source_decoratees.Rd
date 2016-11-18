@@ -4,10 +4,11 @@
 \alias{source_decoratees}
 \title{Read and Parse Decoratees from a File}
 \usage{
-source_decoratees(file)
+source_decoratees(file, into = parent.frame())
 }
 \arguments{
-\item{file}{A character string specifying a file path.}
+\item{file}{A character string specifying a file path or a
+\code{\link{connection}}.}
 }
 \description{
 Given a file, \code{source_decoratees} reads and parses decorated functions

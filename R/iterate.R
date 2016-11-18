@@ -1,11 +1,8 @@
-file_itr <- function(file) {
-  if (!file.exists(file)) {
-    stop('could not find file ', file, call. = FALSE)
-  }
+itr <- function(contents) {
   self <- new.env(parent = baseenv())
-  self$contents <- readLines(file)
+  self$contents <- contents
   self$cursor <- 1
-  self$FILE_NAME <- basename(file)
+#  self$FILE_NAME <- basename(file)
 
   self$get_line <- function() {
     if (self$cursor > length(self$contents)) {

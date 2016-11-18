@@ -3,7 +3,8 @@
 #' Given a file, \code{source_decoratees} reads and parses decorated functions
 #' (decoratees) into the calling environment.
 #'
-#' @param file A character string specifying a file path.
+#' @param file A character string specifying a file path or a
+#'   \code{\link{connection}}.
 #'
 #' @details
 #'
@@ -40,20 +41,19 @@
 #' # format with paragraph tags
 #' html_paragraph("I'll make my report as if I told a story...")
 #'
-source_decoratees <- function(file) {
-  if (!file.exists(file)) {
-    stop('file "', file, '" does not exist', call. = FALSE)
-  }
+source_decoratees <- function(file, into = parent.frame()) {
 
   src <- new.env()
+  contents <- readLines(file)
+
   tryCatch(
-    source(file = file, local = src, keep.source = FALSE),
+    source(file = textConnection(contents), local = src, keep.source = FALSE),
     error = function(e) {
-      stop('problem sourcing ', file, ', ', e$message, call. = FALSE)
+      stop('problem sourcing `file`, ', e$message, call. = FALSE)
     }
   )
 
-  fileitr <- file_itr(file)
+  fileitr <- itr(contents)
   decor <- NULL
 
   while (fileitr$has_next()) {
@@ -108,7 +108,7 @@ source_decoratees <- function(file) {
         attr(feval, 'decoratee') <- get0(f, src)
         dnames <- vapply(decor, re_search, character(1), '^\\s*[^(]+')
         attr(feval, 'decorators') <- set_names(lapply(dnames, get0, src), dnames)
-        assign(f, feval, parent.frame())
+        assign(f, feval, into)
       }
 
       decor <- NULL

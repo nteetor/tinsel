@@ -2,3 +2,8 @@ Name: Source Active File Decoratees
 Description: Source decoratees (decorated functions) from the active file.
 Binding: source_decoratees_addin
 Interactive: false
+
+Name: Run Decoratees Selected Line(s)
+Description: Run selected lines and detect decorated functions.
+Binding: decorate_selected_lines
+Interactive: false
