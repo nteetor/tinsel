@@ -42,6 +42,13 @@
 #' html_paragraph("I'll make my report as if I told a story...")
 #'
 source_decoratees <- function(file, into = parent.frame()) {
+  if (!is.character(file) && !is.connection(file)) {
+    stop('`file` must be character or a connection', call. = FALSE)
+  }
+
+  if (is.character(file) && !file.exists(file)) {
+    stop('path specified by `file` does not exist', call. = FALSE)
+  }
 
   src <- new.env()
   contents <- readLines(file)

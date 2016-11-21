@@ -1,4 +1,4 @@
-context('testing sourcing')
+context('testing loading')
 
 `%is%` <- function(x, predicate) predicate(x)
 
@@ -9,8 +9,12 @@ expect_exists <- function(x) {
   eval(bquote(expect_true(.(x) %is% defined)))
 }
 
-test_that('error for bad path', {
-  expect_error(source_decoratees('path/to/nowhere.R'))
+test_that('error `file` must be character or connection', {
+  expect_error(source_decoratees(3030), '`file` must be character or a connection')
+})
+
+test_that('error `file` path does not exist', {
+  expect_error(source_decoratees('path/to/nowhere.R'), 'path specified by `file`')
 })
 
 test_that('error when missing definitions', {
