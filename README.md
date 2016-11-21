@@ -2,7 +2,7 @@
 
 Decorating functions in R.
 
-![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master) [![codecov](https://codecov.io/gh/nteetor/tinsel/branch/master/graph/badge.svg)](https://codecov.io/gh/nteetor/tinsel) ![cran status](http://www.r-pkg.org/badges/version/tinsel)
+![Travis-CI Build Status](https://travis-ci.org/nteetor/tinsel.svg?branch=master) [![codecov](https://codecov.io/gh/nteetor/tinsel/branch/master/graph/badge.svg)](https://codecov.io/gh/nteetor/tinsel) ![cran status](http://www.r-pkg.org/badges/version/tinsel) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true)](https://ci.appveyor.com/project/nteetor/tinsel)
 
 
 The tinsel package adds function decorators to R using a special `#.` comment. 
