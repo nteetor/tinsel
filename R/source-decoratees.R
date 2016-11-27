@@ -50,6 +50,14 @@ source_decoratees <- function(file, into = parent.frame()) {
     stop('path specified by `file` does not exist', call. = FALSE)
   }
 
+  # if (!is.null(include) && !is.character(include)) {
+  #   stop('argument `include` must be character', call. = FALSE)
+  # }
+
+  if (!is.environment(into)) {
+    stop('argument `into` must be environment', call. = FALSE)
+  }
+
   src <- new.env()
   contents <- readLines(file)
 
@@ -59,6 +67,15 @@ source_decoratees <- function(file, into = parent.frame()) {
       stop('problem sourcing `file`, ', e$message, call. = FALSE)
     }
   )
+
+  # for (f in include) {
+  #   tryCatch(
+  #     source(file = f, local = src, keep.source = FALSE),
+  #     error = function(e) {
+  #       stop('problem including file "', f, '", ', e$message, call. = FALSE)
+  #     }
+  #   )
+  # }
 
   fileitr <- itr(contents)
   decor <- NULL
@@ -87,7 +104,19 @@ source_decoratees <- function(file, into = parent.frame()) {
       as_text <- f
       for (d in decor) {
         split_at <- first_of(d, '(')
+
         dname <- substr(d, 1, split_at - 1)
+        if (grepl('$', dname, fixed = TRUE)) {
+          dfile <- re_search(dname, '^[^$]+')
+          dsrc <- file.path(dirname(file), paste0(dfile, '.R'))
+          dname <- re_search(dname, '[^$]+$')
+
+          if (!file.exists(dsrc)) {
+            stop('could not find decorator file "', dsrc, '"', call. = FALSE)
+          }
+          source(dsrc, local = src, keep.source = FALSE)
+        }
+
         dargs <- substr(d, split_at + 1, nchar(d))
         if (!grepl('^\\s*\\)\\s*$', dargs)) {
           dargs <- paste(',', dargs)

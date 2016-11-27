@@ -65,32 +65,23 @@ if_warning <- function(f, default) {
 #. if_warning(Inf)
 mean_inf <- mean
 
-bare_variable <- 'necessities'
-
 #. if_warning('whoops!')
 one_fish <-
   function(two_fish = NULL) {
     'red fish, blue fish'
   }
 
+# emphasize text
+emph <- function(f, begin = '**', end = begin) {
+  function(...) {
+    paste(begin, f(...), end)
+  }
+}
 
- # emphasize text
- emph <- function(f, m = '**') {
-   function(...) {
-     if (is.na(m[2])) m <- rep(m, 2)
-     paste(m[1], f(...), m[2])
-   }
- }
+#. emph
+my_name <- function() 'Nathan Teetor'
 
- #. emph
- my_name <- function() 'Nathan Teetor'
-
- my_name()
-
- #. emph(c('<b>', '</b>'))
- cats <- function(n) {
-   paste(rep('cats', n), collapse = ' ')
- }
-
- cats(5)
-
+#. emph('<b>', '</b>')
+cats <- function(n) {
+  paste(rep('cats', n), collapse = ' ')
+}
