@@ -2,3 +2,6 @@
 div_scale <- function() {
   cm.colors(3)
 }
+
+#. as_double
+dbl_c <- `c`

@@ -1,4 +1,4 @@
-context('testing loading')
+context('testing sourcing')
 
 `%is%` <- function(x, predicate) predicate(x)
 
@@ -9,12 +9,13 @@ expect_exists <- function(x) {
   eval(bquote(expect_true(.(x) %is% defined)))
 }
 
-test_that('error `file` must be character or connection', {
+test_that('arguments correct class / exist', {
   expect_error(source_decoratees(3030), '`file` must be character or a connection')
-})
-
-test_that('error `file` path does not exist', {
   expect_error(source_decoratees('path/to/nowhere.R'), 'path specified by `file`')
+  expect_error(source_decoratees('../testfiles/simple-functions.R', into = 1),
+               'argument `into` must be environment')
+  expect_error(source_decoratees('../testfiles/simple-functions.R', into = 'fizz'),
+               'argument `into` must be environment')
 })
 
 test_that('error when missing definitions', {
@@ -35,6 +36,21 @@ test_that('decoratees loaded', {
   expect_exists('progress')
   expect_is(progress, 'function')
   expect_is(progress, 'decorated')
+})
+
+test_that('decorators from separate files sourced', {
+  source_decoratees('../testfiles/includes-files.R')
+  expect_exists('div_scale')
+  expect_s3_class(div_scale, c('decorator', 'function'))
+  expect_exists('dbl_c')
+  expect_s3_class(dbl_c, c('decorator', 'function'))
+  expect_equal(dbl_c(1:5), as.double(1:5))
+  expect_equal(dbl_c(1, dbl_c(5:8), '40'), as.double(c(1, 5, 6, 7, 8, 40)))
+})
+
+test_that('error for incorrect decorator file names', {
+  expect_error(source_decoratees('../testfiles/missing-separate.R'),
+               'could not find decorator file')
 })
 
 test_that('correct order of decorators', {

@@ -8,6 +8,6 @@ ramp_to <- function(f, n) {
 
 as_double <- function(f) {
   function(...) {
-    vapply(f(...), as.double, double(1))
+    vapply(f(...), as.double, double(1), USE.NAMES = FALSE)
   }
 }
