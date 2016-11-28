@@ -48,6 +48,13 @@ test_that('decorators from separate files sourced', {
   expect_equal(dbl_c(1, dbl_c(5:8), '40'), as.double(c(1, 5, 6, 7, 8, 40)))
 })
 
+test_that('decorators separate file with extention', {
+  source_decoratees('../testfiles/includes-files.R')
+  expect_exists('boring')
+  expect_s3_class(boring, c('decorator', 'function'))
+
+})
+
 test_that('error for incorrect decorator file names', {
   expect_error(source_decoratees('../testfiles/missing-separate.R'),
                'could not find decorator file')

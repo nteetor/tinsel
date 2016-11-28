@@ -54,6 +54,12 @@ source_decoratees <- function(file, into = parent.frame()) {
     stop('argument `into` must be environment', call. = FALSE)
   }
 
+  old_wd <- getwd()
+  if (is.character(file)) {
+    setwd(dirname(file))
+  }
+  on.exit(setwd(old_wd))
+
   src <- new.env()
   contents <- readLines(file)
 
@@ -97,11 +103,19 @@ source_decoratees <- function(file, into = parent.frame()) {
 
         if (grepl('$', dname, fixed = TRUE)) {
           dfile <- re_search(dname, '^[^$]+')
-          dsrc <- file.path(dirname(file), paste0(dfile, '.R'))
+          dpath <- file.path(getwd(), dfile)
           dname <- re_search(dname, '[^$]+$')
 
-          if (!file.exists(dsrc)) {
-            stop('could not find decorator file "', dsrc, '"', call. = FALSE)
+
+          if (file.exists(dpath)) {
+            dsrc <- dpath
+          } else {
+            message('Could not find ', basename(dpath), ', appending ".R"')
+            dsrc <- paste0(dpath, '.R')
+
+            if (!file.exists(dsrc)) {
+              stop('could not find decorator file "', dsrc, '"', call. = FALSE)
+            }
           }
 
           source(dsrc, local = src, keep.source = FALSE)
