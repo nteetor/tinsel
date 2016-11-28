@@ -1,0 +1,8 @@
+draw_box <- function(f) {
+  function(...) {
+    out <- capture.output(f(...))
+    cat('*', strrep('-', nchar(out) + 2), '*\n', sep = '')
+    cat('| ', out, ' |', '\n', sep = '')
+    cat('*', strrep('-', nchar(out) + 2), '*\n', sep = '')
+  }
+}

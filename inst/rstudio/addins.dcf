@@ -5,5 +5,5 @@ Interactive: false
 
 Name: Run Decoratees Selected Line(s)
 Description: Run selected lines and detect decorated functions.
-Binding: decorate_selected_lines
+Binding: source_selection_addin
 Interactive: false

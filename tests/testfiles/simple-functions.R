@@ -33,7 +33,7 @@ ignore <- function() {
 #. timer
 #. per_centum
 progress <- function() {
-  #. timer
+  #. WALDO
   len <- 20
   msgs <- vapply(
     seq_len(len),
