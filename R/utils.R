@@ -11,6 +11,22 @@ first_of <- function(.string, c) {
   i
 }
 
+`%or%` <- function(s1, s2) {
+  paste0('(?:', s1, '|', s2, ')')
+}
+
+re_starts <- function(.string, pattern) {
+  grepl(paste0('^', pattern), .string)
+}
+
+re_ends <- function(.string, pattern) {
+  grepl(paste0(pattern, '$'), .string)
+}
+
+re_split <- function(.string, pattern) {
+  strsplit(.string, pattern, perl = TRUE)[[1]]
+}
+
 re_search <- function(.string, pattern) {
   bounds <- regexpr(pattern, .string)
   if (bounds[[1]] != -1) {
@@ -18,6 +34,10 @@ re_search <- function(.string, pattern) {
   } else {
     NULL
   }
+}
+
+re_match <- function(.string, pattern) {
+  grepl(paste0('^', pattern, '$'), .string, perl = TRUE)
 }
 
 set_names <- function(obj, nm) {

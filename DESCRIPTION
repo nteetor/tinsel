@@ -14,3 +14,18 @@ Depends:
 Suggests:
     testthat,
     rstudioapi
+Collate:
+    'utils.R'
+    'symbols.R'
+    'errors.R'
+    'token.R'
+    'iterate.R'
+    'stack.R'
+    'traverse.R'
+    'scanner.R'
+    'source-decoratees.R'
+    'decorated.R'
+    'helpers.R'
+    'example.R'
+    'addins.R'
+    'tinsel.R'
