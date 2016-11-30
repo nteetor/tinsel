@@ -3,46 +3,88 @@ scanner <- function(file) {
   self$tokens <- stack()
   self$stream <- traverse(file)
 
-  self$digest_decorator <- function() {
-    # tinsel comment
-    self$stream$skipws()
+  self$comments <- function() {
+    while (self$stream$peek() == .sym$COMMENT) {
+      self$comment()
 
-    buffer <- NULL
-    while ((c <- self$stream$getchar()) != .sym$EOL) {
-      if (c == .sym$DOLLARSIGN) {
-        self$tokens$push(token(buffer, .type$FILE_REFERENCE))
-        self$tokens$push(token(.sym$DOLLARSIGN, .type$FILE_INDEXING))
-        buffer <- NULL
-      }
-
-      buffer <- paste0(buffer, c)
+      # skip over leading white space before a comment
+      self$stream$skipws()
     }
-
-    self$tokens$push(token(buffer, .type$DECORATOR))
   }
-  self$digest_decoratee <- function() {
-    self$stream$skipws()
-
-    buffer <- NULL
-    while (re_match((c <- self$stream$getchar()), .sym$SYNTACTIC_CHAR)) {
-      buffer <- paste0(buffer, c)
+  self$comment <- function() {
+    self$stream$expect(.sym$COMMENT)
+    if (self$stream$peek() == .sym$PERIOD) {
+      # tinsel comment
+      self$stream$expect(.sym$PERIOD)
+      self$tokens$push(token(paste0(.sym$COMMENT, .sym$PERIOD), .type$TINSEL_COMMENT))
+      self$decoration()
     }
 
-    self$tokens$push(token(buffer, .type$DECORATEE))
-
+    # digest characters through end of line (including newline)
+    self$stream$getline()
+  }
+  self$decoration <- function() {
     self$stream$skipws()
-    self$stream$expect(.sym$LESSTHAN)
-    self$stream$expect(.sym$MINUS)
+    self$dreference()
+    self$stream$skipws()
+    self$dcall()
+  }
+  self$dreference <- function() {
+    if (self$stream$peek() == .sym$LBRACKET) {
+      self$stream$expect(.sym$LBRACKET)
+      self$filename()
+      self$stream$expect(.sym$RBRACKET)
+    }
+  }
+  self$filename <- function() {
+    buffer <- NULL
+    while (re_match(self$stream$peek(), .sym$FILENAME_CHAR)) {
+      buffer <- paste0(buffer, self$stream$getchar())
+    }
+    self$tokens$push(token(buffer, .type$FILE_REFERENCE))
+  }
+  self$dcall <- function() {
+    self$identifier()
+    if (self$stream$peek() == .sym$COLON) {
+      self$stream$expect(.sym$COLON)
+      self$stream$expect(.sym$COLON)
+      self$tokens$push(token(strrep(.sym$COLON, 2), .type$PACKAGE_ACCESSOR))
+
+      self$identifier()
+    }
+  }
+  self$identifier <- function() {
+    if (self$stream$peek() == .sym$BACKTICK) {
+      self$quoted()
+    } else {
+      self$syntactic()
+    }
+  }
+  self$quoted <- function() {
+    self$stream$expect(.sym$BACKTICK)
+    buffer <- NULL
+    while (self$stream$peek() != .sym$BACKTICK) {
+      buffer <- paste0(buffer, self$stream$getchar())
+    }
+    self$tokens$push(token(buffer, .type$IDENTIFIER))
+    self$stream$expect(.sym$BACKTICK)
+  }
+  self$syntactic <- function() {
+    buffer <- NULL
+    while (re_match(self$stream$peek(), .sym$SYNTACTIC_CHAR)) {
+      buffer <- paste0(buffer, self$stream$getchar())
+    }
+    self$tokens$push(token(buffer, .type$IDENTIFIER))
   }
 
   self$tokenize <- function() {
     while ((c <- self$stream$getchar()) != .sym$EOF) {
-
       if (c == .sym$COMMENT) {
-        if ((c <- self$stream$getchar()) == .sym$PERIOD) {
-          self$digest_decorator()
-#          self$digest_decoratee(), need to check for additional decorators
-        }
+        self$stream$putchar(c)
+        self$comments()
+      } else if (re_match(c, .sym$IDENTIFIER_CHAR)) {
+        self$stream$putchar(c)
+        self$identifier()
       }
     }
 

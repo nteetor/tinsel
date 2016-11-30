@@ -1,15 +1,16 @@
-condition <- function(subclass, msg, call = sys.call(-1), ...) {
+condition <- function(subclass, message, call = sys.call(-1), ...) {
   structure(
     list(
-      message = msg,
-      call = call,
-      ...
+      message = message,
+      call = call
     ),
-    class = c(subclass, 'condition')
+    class = c(subclass, 'condition'),
+    ...
   )
 }
 
-expected <- function(symbol, actual, lineno = 1) {
-  msg <- sprintf('unexpected character %s on line %i', actual, lineno)
-  condition('expected', msg, symbol = symbol, actual = actual, lineno = lineno)
+expected <- function(symbol, actual, lineno = 1, ...) {
+  msg <- sprintf('found "%s" on line %i, expected "%s"', actual, lineno, symbol)
+  condition('expected', msg, symbol = symbol, actual = actual, lineno = lineno,
+            call. = FALSE)
 }

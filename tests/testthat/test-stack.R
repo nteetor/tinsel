@@ -1,4 +1,4 @@
-context('testing stack object')
+context('  * testing stack object')
 
 test_that('default constructor', {
   smoke <- stack()
