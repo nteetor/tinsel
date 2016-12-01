@@ -1,4 +1,4 @@
-context('testing file iterator')
+context(' * testing file iterator')
 
 test_that('get lines and has lines', {
   fitr <- itr(readLines('../testfiles/tongue-twister.txt'))

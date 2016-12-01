@@ -1,4 +1,4 @@
-context('testing utils')
+context(' * testing utils')
 
 test_that('char_at', {
   expect_error(char_at('error', 0), 'index out of bounds')

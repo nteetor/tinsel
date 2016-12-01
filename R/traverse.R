@@ -3,24 +3,32 @@ traverse <- function(file) {
   ffile <- file(file, open = 'r')
 
   self <- new.env(parent = baseenv())
-  self$chars <- strsplit(readChar(ffile, nchars = fsize), '')[[1]]
+  self$chars <- c(strsplit(readChar(ffile, nchars = fsize), '')[[1]],
+                  .sym$EOF)
   close(ffile)
 
   self$cursor <- 1
   self$EOF <- .sym$EOF
   self$EOL <- .sym$EOL
 
-  self$at_eof <- function() {
-    self$cursor > length(self$chars)
-  }
   self$size <- function() {
     length(self$chars)
   }
+  self$at_eof <- function() {
+    self$cursor > self$size()
+  }
   self$increment_cursor <- function() {
-    self$cursor <- min(self$cursor + 1, self$size() + 1)
+    self$cursor <- min(self$cursor + 1, self$size())
   }
   self$decrement_cursor <- function() {
     self$cursor <- max(self$cursor - 1, 1)
+  }
+  self$peek <- function() {
+    if (self$at_eof()) return(self$EOF)
+    self$chars[self$cursor]
+  }
+  self$hasline <- function() {
+    any(self$chars[self$cursor:self$size()] == self$EOL) && !self$at_eof()
   }
 
   self$getchar <- function() {
@@ -29,6 +37,10 @@ traverse <- function(file) {
     c <- self$chars[self$cursor]
     self$increment_cursor()
     c
+  }
+  self$unget <- function() {
+    # currently no need to support putting back a character
+    self$decrement_cursor()
   }
   self$getregex <- function(regex) {
     buffer <- NULL
@@ -46,33 +58,17 @@ traverse <- function(file) {
     buffer
   }
 
-  self$putchar <- function(c) {
-    self$decrement_cursor()
-    if (c != self$chars[self$cursor]) {
-      self$chars[(self$cursor:self$size()) + 1] <- self$chars[self$cursor:self$size()]
-      self$chars[self$cursor] <- c
-    }
-  }
-
-  self$peek <- function() {
-    self$chars[self$cursor]
-  }
-  self$lookfor <- function(s) {
-    eolindex <- which(self$chars[self$cursor:self$size()] == self$EOL)[1]
-    toeol <- paste0(self$chars[self$cursor:eolindex], collapse = '')
-    is.null(re_search(toeol, s))
-  }
-
   self$skipws <- function() {
     while (re_match(self$getchar(), '\\h')) {}
     self$decrement_cursor()
   }
   self$expect <- function(symbol) {
     if ((c <- self$getchar()) != symbol) {
-      lineno <- sum(self$chars[1:self$cursor] == self$EOL, na.rm = TRUE)
+      lineno <- sum(self$chars[1:self$cursor] == self$EOL, na.rm = TRUE) + 1
       stop(expected(symbol, c, lineno))
     }
   }
 
+  class(self) <- 'traverse'
   self
 }

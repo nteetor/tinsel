@@ -1,4 +1,4 @@
-context('testing sourcing')
+context(' * testing sourcing')
 
 `%is%` <- function(x, predicate) predicate(x)
 

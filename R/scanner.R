@@ -78,18 +78,22 @@ scanner <- function(file) {
   }
 
   self$tokenize <- function() {
-    while ((c <- self$stream$getchar()) != .sym$EOF) {
+    while (self$stream$peek() != .sym$EOF) {
+      c <- self$stream$peek()
       if (c == .sym$COMMENT) {
-        self$stream$putchar(c)
+#        self$stream$backchar()
         self$comments()
       } else if (re_match(c, .sym$IDENTIFIER_CHAR)) {
-        self$stream$putchar(c)
+#        self$stream$backchar()
         self$identifier()
+      } else {
+        self$stream$getchar()
       }
     }
 
     self$tokens$tolist()
   }
 
+  class(self) <- 'scanner'
   self
 }

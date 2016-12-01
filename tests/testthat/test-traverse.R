@@ -1,12 +1,4 @@
-context('  * testing traversal')
-
-`%has_method%` <- function(o, m) {
-  exists(m, envir = o, inherits = FALSE)
-}
-
-expect_has_method <- function(class, method) {
-  eval(bquote(expect_true(class %has_method% .(method))))
-}
+context(' * testing traversal')
 
 test_that('%has_method% helper', {
   twavel <- traverse('../testfiles/tongue-twister.txt')
@@ -16,26 +8,19 @@ test_that('%has_method% helper', {
 
 test_that('initialize traversal', {
   twavel <- traverse('../testfiles/tongue-twister.txt')
-  expect_is(twavel, 'environment')
+  expect_s3_class(twavel, 'traverse')
   expect_type(twavel$cursor, 'double')
   expect_equal(twavel$cursor, 1)
   expect_type(twavel$chars, 'character')
-  expect_equal(length(twavel$chars), 42)
+  expect_equal(length(twavel$chars), 43)
 
-  expect_has_method(twavel, 'at_eof')
-  expect_false(twavel$at_eof())
-  expect_has_method(twavel, 'size')
-  expect_equal(twavel$size(), 42)
-  expect_has_method(twavel, 'increment_cursor')
-  expect_has_method(twavel, 'decrement_cursor')
-  expect_has_method(twavel, 'getchar')
-  expect_has_method(twavel, 'getregex')
-  expect_has_method(twavel, 'getline')
-  expect_has_method(twavel, 'putchar')
-  expect_has_method(twavel, 'peek')
-  expect_has_method(twavel, 'lookfor')
-  expect_has_method(twavel, 'skipws')
-  expect_has_method(twavel, 'expect')
+#  expect_has_fields(twavel, cursor, chars)
+
+  expect_has_methods(
+    twavel,
+    at_eof, size, increment_cursor, decrement_cursor, hasline, gechar, unget,
+    getregex, getline, peek, skipws, expect
+  )
 })
 
 test_that('increment_cursor()', {
@@ -60,15 +45,41 @@ test_that('decrement_cursor()', {
   expect_equal(twavel$cursor, 2)
 })
 
+test_that('hasline()', {
+  twavel <- traverse('../testfiles/tongue-twister.txt')
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, 'The')
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, 'sixth')
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, 'sick')
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, "sheik's")
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, 'sixth')
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, "sheep's")
+  expect_true(twavel$hasline())
+
+  expect_line(twavel, 'sick')
+  expect_false(twavel$hasline())
+})
+
 test_that('getchar()', {
   twavel <- traverse('../testfiles/tongue-twister.txt')
-  expect_equal(twavel$getchar(), 'T')
-  expect_equal(twavel$getchar(), 'h')
-  expect_equal(twavel$getchar(), 'e')
-  expect_equal(twavel$getchar(), '\n')
-  expect_equal(twavel$getchar(), 's')
+  expect_char(twavel, 'T')
+  expect_char(twavel, 'h')
+  expect_char(twavel, 'e')
+  expect_char(twavel, '\n')
+  expect_char(twavel, 's')
   for (i in seq_len(twavel$size())) twavel$getchar()
-  expect_equal(twavel$getchar(), 'EOF')
+  expect_char(twavel, 'EOF')
 })
 
 test_that('getregex()', {
@@ -79,10 +90,6 @@ test_that('getregex()', {
   expect_null(twavel$getregex('\\d'))
   expect_equal(twavel$getregex('.|\n'), "th\nsick\nsheik's\nsixth\nsheep's\nsick\n")
 })
-
-expect_line <- function(traversal, string) {
-  eval(bquote(expect_equal(.(traversal$getline()), .(re_split(string, '')))))
-}
 
 test_that('getline()', {
   twavel <- traverse('../testfiles/tongue-twister.txt')
@@ -95,8 +102,42 @@ test_that('getline()', {
   expect_line(twavel, 'sick')
 })
 
-test_that('putchar', { skip('not implemented') })
-test_that('peek', { skip('not implemented') })
-test_that('lookfor', { skip('not implemented') })
-test_that('skipws', { skip('not implemented') })
-test_that('expect', { skip('not implemented') })
+test_that('peek()', {
+  twavel <- traverse('../testfiles/tongue-twister.txt')
+  expect_equal(twavel$peek(), 'T')
+  expect_char(twavel, 'T')
+  expect_equal(twavel$peek(), 'h')
+  expect_line(twavel, 'he')
+  expect_line(twavel, 'sixth')
+  expect_equal(twavel$peek(), 's')
+  expect_char(twavel, 's')
+  expect_equal(twavel$peek(), 'i')
+  while (twavel$hasline()) twavel$getline()
+  expect_equal(twavel$peek(), 'EOF')
+})
+
+test_that('unget()', {
+  twavel <- traverse('../testfiles/tongue-twister.txt')
+  expect_char(twavel, 'T')
+  twavel$unget()
+  expect_equal(twavel$peek(), 'T')
+  expect_line(twavel, 'The')
+  twavel$unget()
+  expect_char(twavel, '\n')
+  expect_char(twavel, 's')
+  expect_char(twavel, 'i')
+})
+
+test_that('skipws', {
+  twavel <- traverse('../testfiles/r-function.utils')
+  twavel$getline()
+  twavel$skipws()
+  expect_char(twavel, 'f')
+  expect_char(twavel, 'u')
+})
+
+test_that('expect', {
+  twavel <- traverse('../testfiles/tongue-twister.txt')
+  expect_error(twavel$expect('@'), 'found "T" on line 1, expected "@"')
+  expect_silent(twavel$expect('h'))
+})

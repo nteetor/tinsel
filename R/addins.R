@@ -12,7 +12,7 @@ NULL
 
 source_decoratees_addin <- function() {
   if (!requireNamespace('rstudioapi', quietly = TRUE)) {
-    stop('RStudio addins require package "rstudioapi"', call. = FALSE)
+    stop('please install the "rstudioapi" package', call. = FALSE)
   }
 
   if (!rstudioapi::isAvailable()) {
@@ -32,7 +32,7 @@ source_decoratees_addin <- function() {
 
 source_selection_addin <- function() {
   if (!requireNamespace('rstudioapi', quietly = TRUE)) {
-    stop('RStudio addins require package "rstudioapi"', call. = FALSE)
+    stop('please install the "rstudioapi" package', call. = FALSE)
   }
 
   if (!rstudioapi::isAvailable()) {
