@@ -1,5 +1,4 @@
-# tinsel <div> <img align="right" src="https://cranlogs.r-pkg.org/badges/last-month/tinsel"> <img align="right" src="http://www.r-pkg.org/badges/version/tinsel"/> <img align="right" src="https://codecov.io/gh/nteetor/tinsel/branch/dev/graph/badge.svg"/> <img align="right" src="https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true"/> <img align="right" src="https://travis-ci.org/nteetor/tinsel.svg?branch=dev"/>
-</div>
+# tinsel <img align="right" src="https://cranlogs.r-pkg.org/badges/last-month/tinsel"> <img align="right" src="http://www.r-pkg.org/badges/version/tinsel"/> <img align="right" src="https://codecov.io/gh/nteetor/tinsel/branch/dev/graph/badge.svg"/> <img align="right" src="https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true"/> <img align="right" src="https://travis-ci.org/nteetor/tinsel.svg?branch=dev"/>
 
 ###### *Transforming functions in R using decorators.*
 
