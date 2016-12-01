@@ -1,6 +1,7 @@
-# tinsel <img align="right" src="http://www.r-pkg.org/badges/version/tinsel"/> <img align="right" src="https://codecov.io/gh/nteetor/tinsel/branch/dev/graph/badge.svg"/> <img align="right" src="https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true"/> <img align="right" src="https://travis-ci.org/nteetor/tinsel.svg?branch=dev"/> 
+# tinsel <div> <img align="right" src="https://cranlogs.r-pkg.org/badges/last-month/tinsel"> <img align="right" src="http://www.r-pkg.org/badges/version/tinsel"/> <img align="right" src="https://codecov.io/gh/nteetor/tinsel/branch/dev/graph/badge.svg"/> <img align="right" src="https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true"/> <img align="right" src="https://travis-ci.org/nteetor/tinsel.svg?branch=dev"/>
+</div>
 
-###### Transforming functions in R using decorators.
+###### *Transforming functions in R using decorators.*
 
 The tinsel package adds function decorators to R using a special `#.` comment. 
 Decorators are a means of transforming a function without needing to rewrite 
