@@ -82,16 +82,36 @@ scanner <- function(file) {
       self$tokens$push(token(buffer, .type$IDENTIFIER))
     }
   }
+  self$quotation <- function() {
+    if (self$stream$peek() == .sym$SINGLEQUOTE) {
+      qtype <- .sym$SINGLEQUOTE
+    } else {
+      qtype <- .sym$DOUBLEQUOTE
+    }
+
+    self$stream$expect(qtype)
+    buffer <- NULL
+    while (self$stream$peek() != qtype) {
+      c <- self$stream$getchar()
+      if (c == .sym$BACKSLASH && self$stream$peek() == qtype) {
+        buffer <- paste0(buffer, c, self$stream$getchar())
+      } else {
+        buffer <- paste0(buffer, c)
+      }
+    }
+    self$stream$expect(qtype)
+    self$tokens$push(token(buffer, .type$STRING))
+  }
 
   self$tokenize <- function() {
     while (self$stream$peek() != .sym$EOF) {
       c <- self$stream$peek()
       if (c == .sym$COMMENT) {
-#        self$stream$backchar()
         self$comments()
       } else if (re_match(c, .sym$IDENTIFIER_CHAR)) {
-#        self$stream$backchar()
         self$identifier()
+      } else if (c == .sym$SINGLEQUOTE || c == .sym$DOUBLEQUOTE) {
+        self$quotation()
       } else {
         self$stream$getchar()
       }

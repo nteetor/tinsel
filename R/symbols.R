@@ -11,7 +11,10 @@
   COLON = ':',
   PERIOD = '.',
   BACKTICK = '`',
+  SINGLEQUOTE = "'",
+  DOUBLEQUOTE = '"',
   DOLLARSIGN = '$',
+  BACKSLASH = '\\',
   NUMBER = '\\d',
   LETTER = '\\w',
   # when using decorators from separate files:
@@ -34,6 +37,7 @@
   PACKAGE_ACCESSOR = 5,
   TINSEL_COMMENT = 6,
   RESERVED = 7,
+  STRING = 8,
   UNKNOWN = 99
 )
 

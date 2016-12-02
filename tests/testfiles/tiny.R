@@ -1,4 +1,5 @@
-#. [separate-file] decorator
+#. [separate-file] pack::deck
 fun <- function(...) {
-  return('value')
+  `return value` <- "Hello, 'world'!"
+  return(`return value`)
 }
