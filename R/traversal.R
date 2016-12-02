@@ -1,4 +1,6 @@
-traverse <- function(file) {
+is.traversal <- function(x) inherits(x, 'traversal')
+
+traversal <- function(file) {
   fsize <- (file.info(file))$size
   ffile <- file(file, open = 'r')
 
@@ -69,6 +71,6 @@ traverse <- function(file) {
     }
   }
 
-  class(self) <- 'traverse'
+  class(self) <- 'traversal'
   self
 }
