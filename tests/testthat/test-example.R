@@ -1,4 +1,4 @@
-context(' * testing example helpers')
+context(' * testing tinsel_example')
 
 test_that('file path exists', {
   expect_true(file.exists(tinsel_example('tags.R')))

@@ -1,4 +1,4 @@
 #. [separate-file] decorator
-fun <- function() {
+fun <- function(...) {
   return('value')
 }
