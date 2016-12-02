@@ -17,7 +17,10 @@ traversal <- function(file) {
     length(self$chars)
   }
   self$at_eof <- function() {
-    self$cursor > self$size()
+    self$cursor >= self$size()
+  }
+  self$reset <- function() {
+    self$cursor <- 1
   }
   self$increment_cursor <- function() {
     self$cursor <- min(self$cursor + 1, self$size())

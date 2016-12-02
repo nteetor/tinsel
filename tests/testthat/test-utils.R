@@ -1,5 +1,12 @@
 context(' * testing utils')
 
+test_that('%||%', {
+  expect_equal(NULL %||% 3, 3)
+  expect_equal(NULL %||% 'hello', 'hello')
+  expect_equal(list(1, 2) %||% c(1, 2), list(1, 2))
+  expect_null(NULL %||% NULL)
+})
+
 test_that('char_at', {
   expect_error(char_at('error', 0), 'index out of bounds')
   expect_error(char_at('ire', 10))
@@ -14,11 +21,27 @@ test_that('first_of', {
   expect_equal(first_of('dough', 'd'), 1)
 })
 
+test_that('re_split', {
+  expect_equal(re_split('fox', ''), c('f', 'o', 'x'))
+  expect_equal(re_split('123,abc', ','), c('123', 'abc'))
+  expect_equal(re_split('1a2b3c', '[a-z]'), c('1', '2', '3'))
+  expect_equal(re_split('1a2b3c', '\\d'), c('', 'a', 'b', 'c'))
+})
+
 test_that('re_search', {
   string1 <- 'falcon'
   expect_equal(re_search(string1, '(\\w){3}$'), 'con')
   string2 <- 'captain'
   expect_null(re_search(string2, 'punch'))
+})
+
+test_that('re_match', {
+  expect_true(re_match('helloworld', 'hello\\w+'))
+  expect_true(re_match('simple', 'simple'))
+
+  expect_false(re_match('hellomoon', 'hello'))
+  expect_false(re_match('hellosun', 'sun'))
+  expect_false(re_match('  _', '\\s'))
 })
 
 test_that('set_names', {

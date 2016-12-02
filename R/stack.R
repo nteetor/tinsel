@@ -1,3 +1,5 @@
+is.stack <- function(x) inherits(x, 'stack')
+
 stack <- function(list = NULL) {
   self <- new.env(parent = emptyenv())
 
@@ -31,6 +33,7 @@ stack <- function(list = NULL) {
     )
   }
 
+  class(self) <- 'stack'
   self
 }
 

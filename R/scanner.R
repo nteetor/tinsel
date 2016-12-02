@@ -1,7 +1,9 @@
+is.scanner <- function(x) inherits(x, 'scanner')
+
 scanner <- function(file) {
   self <- new.env(parent = emptyenv())
   self$tokens <- stack()
-  self$stream <- traverse(file)
+  self$stream <- traversal(file)
 
   self$comments <- function() {
     while (self$stream$peek() == .sym$COMMENT) {
@@ -55,12 +57,12 @@ scanner <- function(file) {
   }
   self$identifier <- function() {
     if (self$stream$peek() == .sym$BACKTICK) {
-      self$quoted()
+      self$nonsyntactic()
     } else {
       self$syntactic()
     }
   }
-  self$quoted <- function() {
+  self$nonsyntactic <- function() {
     self$stream$expect(.sym$BACKTICK)
     buffer <- NULL
     while (self$stream$peek() != .sym$BACKTICK) {
@@ -74,7 +76,11 @@ scanner <- function(file) {
     while (re_match(self$stream$peek(), .sym$SYNTACTIC_CHAR)) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
-    self$tokens$push(token(buffer, .type$IDENTIFIER))
+    if (buffer %in% .reserved) {
+      self$tokens$push(token(buffer, .type$RESERVED))
+    } else {
+      self$tokens$push(token(buffer, .type$IDENTIFIER))
+    }
   }
 
   self$tokenize <- function() {
@@ -91,6 +97,7 @@ scanner <- function(file) {
       }
     }
 
+    self$stream$reset()
     self$tokens$tolist()
   }
 

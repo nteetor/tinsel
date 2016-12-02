@@ -1,6 +1,11 @@
+is.token <- function(x) inherits(x, 'token')
+
 token <- function(value, type) {
-  list(
-    type = type,
-    value = value
+  structure(
+    list(
+      type = type,
+      value = value
+    ),
+    class = 'token'
   )
 }

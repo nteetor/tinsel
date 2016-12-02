@@ -21,7 +21,7 @@ Collate:
     'token.R'
     'iterate.R'
     'stack.R'
-    'traverse.R'
+    'traversal.R'
     'scanner.R'
     'source-decoratees.R'
     'decorated.R'

@@ -1,12 +1,12 @@
-context(' * testing stack object')
+context(' * testing stack')
 
 test_that('default constructor', {
   smoke <- stack()
-  expect_is(smoke, 'environment')
-  expect_is(smoke$push, 'function')
-  expect_is(smoke$pop, 'function')
-  expect_is(smoke$size, 'function')
-  expect_is(smoke$tolist, 'function')
+  expect_s3_class(smoke, 'stack')
+  expect_true(is.stack(smoke))
+
+  expect_has_fields(smoke, 'cursor', 'values')
+  expect_has_methods(smoke, 'push', 'pop', 'size', 'tolist')
 
   expect_equal(smoke$size(), 0)
   expect_equal(smoke$tolist(), list())
@@ -14,11 +14,12 @@ test_that('default constructor', {
 
 test_that('constructor', {
   flapjacks <- stack(list(maple = 'syrup', berries = 'blue'))
-  expect_is(flapjacks, 'environment')
-  expect_is(flapjacks$push, 'function')
-  expect_is(flapjacks$pop, 'function')
-  expect_is(flapjacks$size, 'function')
-  expect_is(flapjacks$tolist, 'function')
+
+  expect_s3_class(flapjacks, 'stack')
+  expect_true(is.stack(flapjacks))
+
+  expect_has_fields(flapjacks, 'cursor', 'values')
+  expect_has_methods(flapjacks, 'push', 'pop', 'size', 'tolist')
 
   expect_equal(flapjacks$size(), 2)
   expect_equal(flapjacks$tolist(), list('syrup', 'blue'))

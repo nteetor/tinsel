@@ -1,4 +1,4 @@
-context(' * helper functions')
+context(' * testing helpers')
 
 test_that('is.decorated function', {
   source_decoratees('../testfiles/character-defaults.R')

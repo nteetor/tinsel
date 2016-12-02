@@ -33,5 +33,10 @@
   IDENTIFIER = 4,
   PACKAGE_ACCESSOR = 5,
   TINSEL_COMMENT = 6,
+  RESERVED = 7,
   UNKNOWN = 99
 )
+
+.reserved <- c('if', 'else', 'repeat', 'while', 'function', 'for', 'in',
+               'next', 'break', 'TRUE', 'FALSE', 'NULL', 'Inf', 'NaN', 'NA',
+               'NA_integer_', 'NA_real_', 'NA_complex_', 'NA_character_')
