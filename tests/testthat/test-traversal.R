@@ -3,6 +3,7 @@ context(' * testing traversal')
 test_that('initialize traversal', {
   twavel <- traversal('../testfiles/tongue-twister.txt')
   expect_s3_class(twavel, 'traversal')
+  expect_true(is.traversal(twavel))
   expect_type(twavel$cursor, 'double')
   expect_equal(twavel$cursor, 1)
   expect_type(twavel$chars, 'character')

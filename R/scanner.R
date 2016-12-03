@@ -83,9 +83,12 @@ scanner <- function(file) {
     }
   }
   self$quotation <- function() {
+    # this may seem odd, but is necessary
     if (self$stream$peek() == .sym$SINGLEQUOTE) {
       qtype <- .sym$SINGLEQUOTE
     } else {
+      # here is where we catch a potential incorrect character by assuming
+      # if not single quote then double quote
       qtype <- .sym$DOUBLEQUOTE
     }
 
@@ -101,6 +104,15 @@ scanner <- function(file) {
     }
     self$stream$expect(qtype)
     self$tokens$push(token(buffer, .type$STRING))
+  }
+  self$number <- function() {
+    seene <- FALSE
+    seendot <- FALSE
+    if (!re_match(self$stream$peek(), .sym$NUMBER)) {
+      self$stream$expect(.sym$NUMBER)
+    }
+    # while (re_match(self$stream$peek(), .sym$NUMBER) &&
+    #        (!seendot && self$stream)
   }
 
   self$tokenize <- function() {

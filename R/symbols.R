@@ -15,8 +15,8 @@
   DOUBLEQUOTE = '"',
   DOLLARSIGN = '$',
   BACKSLASH = '\\',
-  NUMBER = '\\d',
-  LETTER = '\\w',
+  NUMBER = '[0-9]',
+  LETTER = '[a-zA-Z]',
   # when using decorators from separate files:
   #   1. the file must not contain a right brace
   #   2. we assume the operating system will impose file name requirements

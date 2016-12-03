@@ -2,6 +2,8 @@ context(' * testing scanner')
 
 test_that('constructor', {
   police <- scanner('../testfiles/tiny.R')
+  expect_s3_class(police, 'scanner')
+  expect_true(is.scanner(police))
 
   expect_has_fields(police, 'stream', 'tokens')
   expect_has_methods(police, 'comment', 'comments', 'dcall', 'decoration',
