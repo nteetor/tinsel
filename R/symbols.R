@@ -15,7 +15,8 @@
   DOUBLEQUOTE = '"',
   DOLLARSIGN = '$',
   BACKSLASH = '\\',
-  NUMBER = '[0-9]',
+  EXPNOTATION = 'e',
+  NUMBER = '[0-9.e]',
   LETTER = '[a-zA-Z]',
   # when using decorators from separate files:
   #   1. the file must not contain a right brace
@@ -26,7 +27,7 @@
   SYNTACTIC_CHAR = '[\\w.]',
   # quoted characters are anything except a backtick
   QUOTED_CHAR = '[^`]',
-  IDENTIFIER_CHAR = '[`\\w.]'
+  IDENTIFIER_CHAR = '[`a-zA-Z.]'
 )
 
 .type <- list(
@@ -38,6 +39,7 @@
   TINSEL_COMMENT = 6,
   RESERVED = 7,
   STRING = 8,
+  NUMBER = 9,
   UNKNOWN = 99
 )
 

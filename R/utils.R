@@ -19,7 +19,7 @@ re_split <- function(.string, pattern) {
 
 re_search <- function(.string, pattern) {
   bounds <- regexpr(pattern, .string)
-  if (bounds[[1]] != -1) {
+  if (length(bounds) && bounds[[1]] != -1) {
     substr(.string, bounds[[1]], bounds[[1]] + attr(bounds, 'match.length') - 1)
   } else {
     NULL

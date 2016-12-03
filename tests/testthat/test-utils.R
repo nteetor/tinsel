@@ -33,6 +33,9 @@ test_that('re_search', {
   expect_equal(re_search(string1, '(\\w){3}$'), 'con')
   string2 <- 'captain'
   expect_null(re_search(string2, 'punch'))
+  nil <- NULL
+  expect_null(re_search(nil, 'anything'))
+  expect_null(re_search(nil, '.*'))
 })
 
 test_that('re_match', {

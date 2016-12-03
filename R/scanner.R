@@ -106,13 +106,19 @@ scanner <- function(file) {
     self$tokens$push(token(buffer, .type$STRING))
   }
   self$number <- function() {
-    seene <- FALSE
-    seendot <- FALSE
-    if (!re_match(self$stream$peek(), .sym$NUMBER)) {
-      self$stream$expect(.sym$NUMBER)
+    buffer <- NULL
+    while (re_match(self$stream$peek(), .sym$NUMBER)) {
+      if (self$stream$peek() == .sym$PERIOD &&
+          first_of(buffer, .sym$PERIOD) != -1) {
+        self$stream$expect(.sym$NUMBER)
+      } else if (self$stream$peek() == .sym$EXPNOTATION &&
+          first_of(buffer, .sym$EXPNOTATION) != -1) {
+        self$stream$expect(.sym$NUMBER)
+      } else {
+        buffer <- paste0(buffer, self$stream$getchar())
+      }
     }
-    # while (re_match(self$stream$peek(), .sym$NUMBER) &&
-    #        (!seendot && self$stream)
+    self$tokens$push(token(buffer, .type$NUMBER))
   }
 
   self$tokenize <- function() {
@@ -124,6 +130,8 @@ scanner <- function(file) {
         self$identifier()
       } else if (c == .sym$SINGLEQUOTE || c == .sym$DOUBLEQUOTE) {
         self$quotation()
+      } else if (re_match(c, .sym$NUMBER)) {
+        self$number()
       } else {
         self$stream$getchar()
       }
