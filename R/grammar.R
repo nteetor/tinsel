@@ -15,13 +15,3 @@
 #
 # H => \R | \R, H
 #
-
-grammar <- function() {
-  self <- new.env(parent = emptyenv())
-
-  self$S <- function() {
-
-  }
-
-
-}

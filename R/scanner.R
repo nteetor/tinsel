@@ -136,6 +136,7 @@ scanner <- function(file) {
         self$stream$getchar()
       }
     }
+    self$tokens$push(token(.sym$EOF, .type$EOF))
 
     self$stream$reset()
     self$tokens$tolist()

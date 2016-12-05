@@ -8,6 +8,7 @@ stack <- function(list = NULL) {
     self$cursor <- 1
   } else {
     self$cursor <- length(list) + 1
+    list <- rev(as.list(list))
     self$values <- list2env(
       set_names(list, seq_along(list)),
       parent = emptyenv()
@@ -19,12 +20,19 @@ stack <- function(list = NULL) {
     self$cursor <- self$cursor + 1
   }
   self$pop <- function() {
-    if (self$cursor - 1 <= 0) return(NULL)
+    if (self$empty()) return(NULL)
     self$cursor <- self$cursor - 1
     get(as.character(self$cursor), envir = self$values, inherits = FALSE)
   }
   self$size <- function() {
     self$cursor - 1
+  }
+  self$peek <- function() {
+    if (self$empty()) return(NULL)
+    get(as.character(self$cursor - 1), envir = self$values, inherits = FALSE)
+  }
+  self$empty <- function() {
+    self$size() == 0
   }
   self$tolist <- function() {
     set_names(

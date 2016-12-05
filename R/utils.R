@@ -27,7 +27,11 @@ re_search <- function(.string, pattern) {
 }
 
 re_match <- function(.string, pattern) {
-  grepl(paste0('^', pattern, '$'), .string, perl = TRUE)
+  if (nchar(pattern) == 1) {
+    grepl(pattern, .string, fixed = TRUE)
+  } else {
+    grepl(paste0('^', pattern, '$'), .string, perl = TRUE)
+  }
 }
 
 set_names <- function(obj, nm) {

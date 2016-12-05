@@ -47,7 +47,7 @@ test_that('re_match', {
   expect_false(re_match('  _', '\\s'))
 })
 
-test_that('set_names', {
+test_that('set_names()', {
   lyst <- list(1, 2, 3)
   lyst <- set_names(lyst, c('one', 'two', 'three'))
   myst <- list(one = 1, two = 2, three = 3)
@@ -56,7 +56,7 @@ test_that('set_names', {
   expect_equal(set_names(lyst, c('one', 'two', 'three')), myst)
 })
 
-test_that('cat0', {
+test_that('cat0()', {
   expect_output(cat0('hello', 'world'), '^helloworld$')
   expect_output(cat0('hello   ', 'moon'), '^hello   moon$')
 })

@@ -40,6 +40,7 @@
   RESERVED = 7,
   STRING = 8,
   NUMBER = 9,
+  EOF = 98,
   UNKNOWN = 99
 )
 
