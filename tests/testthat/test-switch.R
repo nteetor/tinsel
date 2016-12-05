@@ -14,6 +14,8 @@ test_that('if_symbol()', {
   expect_equal(if_symbol('1', LPAREN = ':', NUMBER = 'one'), 'one')
   expect_equal(if_symbol('1', NUMBER = , LETTER = '\\w'), '\\w')
   expect_equal(if_symbol('e', EXPNOTATION = 'E', EOF = , EOL = -1), 'E')
+
+  expect_error(if_symbol('e', EXPNOTATION = do_e), 'no definition found for do_e')
 })
 
 test_that('if_type()', {

@@ -1,3 +1,7 @@
+expect_attribute <- function(object, attribute, value) {
+  eval(bquote(expect_equal(.(attr(object, attribute, TRUE)), .(value))))
+}
+
 expect_char <- function(.traversal, char) {
   eval(bquote(expect_equal(.(.traversal$getchar()), .(char))))
 }

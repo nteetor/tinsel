@@ -1,9 +1,5 @@
 context(' * testing custom errors')
 
-expect_attribute <- function(object, attribute, value) {
-  eval(bquote(expect_equal(.(attr(object, attribute, TRUE)), .(value))))
-}
-
 test_that('condition constructor', {
   simple <- condition('simple', 'just a simple error')
   expect_s3_class(simple, c('simple', 'error', 'condition'))
@@ -24,4 +20,15 @@ test_that('expected condition', {
   expect_attribute(expt, 'actual', '3')
   expect_attribute(expt, 'lineno', 7)
   expect_attribute(expt, 'extra', 'garlic')
+})
+
+test_that('custom messages', {
+  expnum <- expected(.sym$NUMBER, 'A', 1)
+  expect_error(stop(expnum), 'found "A" on line 1, expected a numeric character')
+  explet <- expected(.sym$LETTER, 0, 1)
+  expect_error(stop(explet), 'found "0" on line 1, expected an alphabetic character')
+  expfname <- expected(.sym$FILENAME_CHAR, '\\', 1)
+  expect_error(stop(expfname), 'found "\\" on line 1, expected a character allowed in a file name', fixed = TRUE)
+  expsyn <- expected(.sym$SYNTACTIC_CHAR, '%', 1)
+  expect_error(stop(expsyn), 'found "%" on line 1, expected an alphanumeric character, "_", or "."', fixed = TRUE)
 })

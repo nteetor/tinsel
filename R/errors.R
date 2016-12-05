@@ -10,19 +10,19 @@ condition <- function(subclass, message, call = sys.call(-1), ...) {
 }
 
 expected <- function(symbol, actual, lineno = 1, ...) {
-#  symname <- names(which(.sym == symbol))
+  if (.sym$NUMBER == symbol) {
+    symbolmsg <- 'a numeric character'
+  } else if (.sym$LETTER == symbol) {
+    symbolmsg <- 'an alphabetic character'
+  } else if (.sym$FILENAME_CHAR == symbol) {
+    symbolmsg <- 'a character allowed in a file name' # bleh
+  } else if (.sym$SYNTACTIC_CHAR == symbol) {
+    symbolmsg <- 'an alphanumeric character, "_", or "."'
+  } else {
+    symbolmsg <- paste0('"', symbol, '"')
+  }
 
-    if (.sym$NUMBER == symbol) {
-      symbol <- 'a digit'
-    } else if (.sym$LETTER == symbol) {
-      symbol <- 'a letter'
-    } else if (.sym$FILENAME_CHAR == symbol) {
-      symbol <- 'a valid file name character'
-    } else if (.sym$SYNTACTIC_CHAR == symbol) {
-      symbol <- 'a letter, _, or .'
-    }
-
-  msg <- sprintf('found "%s" on line %i, expected "%s"', actual, lineno, symbol)
+  msg <- sprintf('found "%s" on line %i, expected %s', actual, lineno, symbolmsg)
   condition('expected', msg, symbol = symbol, actual = actual, lineno = lineno,
             call. = FALSE, ...)
 }
