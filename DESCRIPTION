@@ -21,6 +21,7 @@ Collate:
     'token.R'
     'iterate.R'
     'stack.R'
+    'switch.R'
     'traversal.R'
     'grammar.R'
     'scanner.R'
