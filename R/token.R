@@ -10,11 +10,12 @@ value <- function(t) {
   t$value
 }
 
-token <- function(value, type) {
+token <- function(value, type, lineno) {
   structure(
     list(
       type = type,
-      value = value
+      value = value,
+      lineno = lineno
     ),
     class = 'token'
   )

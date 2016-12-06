@@ -13,7 +13,7 @@ test_that('initialize traversal', {
 
   expect_has_methods(twavel, 'at_eof', 'size', 'reset', 'increment_cursor',
                      'decrement_cursor', 'hasline', 'getchar', 'unget',
-                     'getregex', 'getline', 'peek', 'skipws', 'expect')
+                     'getregex', 'getline', 'peek', 'skipws', 'lineno')
 })
 
 test_that('increment_cursor()', {
@@ -38,13 +38,15 @@ test_that('decrement_cursor()', {
   expect_equal(twavel$cursor, 2)
 })
 
-test_that('hasline()', {
+test_that('hasline() / lineno()', {
   twavel <- traversal('../testfiles/tongue-twister.txt')
   expect_true(twavel$hasline())
 
+  expect_equal(twavel$lineno(), 1)
   expect_line(twavel, 'The')
   expect_true(twavel$hasline())
 
+  expect_equal(twavel$lineno(), 2)
   expect_line(twavel, 'sixth')
   expect_true(twavel$hasline())
 
@@ -60,8 +62,11 @@ test_that('hasline()', {
   expect_line(twavel, "sheep's")
   expect_true(twavel$hasline())
 
+  expect_equal(twavel$lineno(), 7)
   expect_line(twavel, 'sick')
   expect_false(twavel$hasline())
+
+  expect_equal(twavel$lineno(), 8)
 })
 
 test_that('getchar()', {
@@ -144,10 +149,4 @@ test_that('skipws()', {
   twavel$skipws()
   expect_char(twavel, 'f')
   expect_char(twavel, 'u')
-})
-
-test_that('expect()', {
-  twavel <- traversal('../testfiles/tongue-twister.txt')
-  expect_error(twavel$expect('@'), 'found "T" on line 1, expected "@"')
-  expect_silent(twavel$expect('h'))
 })

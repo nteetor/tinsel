@@ -19,6 +19,9 @@ traversal <- function(file) {
   self$at_eof <- function() {
     self$cursor >= self$size()
   }
+  self$lineno <- function() {
+    sum(self$chars[1:self$cursor] == self$EOL, na.rm = TRUE) + 1
+  }
   self$reset <- function() {
     self$cursor <- 1
   }
@@ -66,12 +69,6 @@ traversal <- function(file) {
   self$skipws <- function() {
     while (re_match(self$getchar(), '\\h')) {}
     self$decrement_cursor()
-  }
-  self$expect <- function(symbol) {
-    if ((c <- self$getchar()) != symbol) {
-      lineno <- sum(self$chars[1:self$cursor] == self$EOL, na.rm = TRUE) + 1
-      stop(expected(symbol, c, lineno))
-    }
   }
 
   class(self) <- 'traversal'

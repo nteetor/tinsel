@@ -27,7 +27,9 @@
   SYNTACTIC_CHAR = '[\\w.]',
   # quoted characters are anything except a backtick
   QUOTED_CHAR = '[^`]',
-  IDENTIFIER_CHAR = '[`a-zA-Z.]'
+  IDENTIFIER_CHAR = '[`a-zA-Z.]',
+  TINSEL_COMMENT = '#.',
+  PACKAGE_ACCESSOR = '::'
 )
 
 .type <- list(

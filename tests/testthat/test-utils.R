@@ -7,7 +7,7 @@ test_that('%||%', {
   expect_null(NULL %||% NULL)
 })
 
-test_that('char_at', {
+test_that('char_at()', {
   expect_error(char_at('error', 0), 'index out of bounds')
   expect_error(char_at('ire', 10))
 
@@ -15,7 +15,7 @@ test_that('char_at', {
   expect_equal('c', char_at('abc', -1))
 })
 
-test_that('first_of', {
+test_that('first_of()', {
   expect_equal(first_of('abcdef', '1'), -1)
   expect_equal(first_of('food', 'd'), 4)
   expect_equal(first_of('dough', 'd'), 1)
@@ -28,7 +28,7 @@ test_that('re_split', {
   expect_equal(re_split('1a2b3c', '\\d'), c('', 'a', 'b', 'c'))
 })
 
-test_that('re_search', {
+test_that('re_search()', {
   string1 <- 'falcon'
   expect_equal(re_search(string1, '(\\w){3}$'), 'con')
   string2 <- 'captain'
@@ -38,7 +38,7 @@ test_that('re_search', {
   expect_null(re_search(nil, '.*'))
 })
 
-test_that('re_match', {
+test_that('re_match()', {
   expect_true(re_match('helloworld', 'hello\\w+'))
   expect_true(re_match('simple', 'simple'))
 

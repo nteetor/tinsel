@@ -8,7 +8,7 @@ test_that('constructor', {
   expect_has_fields(police, 'stream', 'tokens')
   expect_has_methods(police, 'comment', 'comments', 'dcall', 'decoration',
                      'dreference', 'filename', 'identifier', 'nonsyntactic',
-                     'syntactic', 'quotation', 'number', 'tokenize')
+                     'syntactic', 'quotation', 'number', 'tokenize', 'expect')
 
   expect_s3_class(police$tokens, 'stack')
   expect_s3_class(police$stream, 'traversal')

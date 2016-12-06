@@ -13,13 +13,9 @@ test_that('condition constructor', {
 })
 
 test_that('expected condition', {
-  expt <- expected('E', '3', 7, extra = 'garlic')
+  expt <- expected('E', '3', 7)
   expect_s3_class(expt, c('expected', 'error', 'condition'))
   expect_equal(expt$message, 'found "3" on line 7, expected "E"')
-  expect_attribute(expt, 'symbol', 'E')
-  expect_attribute(expt, 'actual', '3')
-  expect_attribute(expt, 'lineno', 7)
-  expect_attribute(expt, 'extra', 'garlic')
 })
 
 test_that('custom messages', {

@@ -5,6 +5,15 @@ scanner <- function(file) {
   self$tokens <- stack()
   self$stream <- traversal(file)
 
+  self$expect <- function(symbol) {
+    c <- self$stream$getchar()
+    if (c != symbol) {
+      stop(expected(symbol, c, self$stream$lineno()), call. = FALSE)
+    } else {
+      c
+    }
+  }
+
   self$comments <- function() {
     while (self$stream$peek() == .sym$COMMENT) {
       self$comment()
@@ -14,11 +23,12 @@ scanner <- function(file) {
     }
   }
   self$comment <- function() {
-    self$stream$expect(.sym$COMMENT)
+    self$expect(.sym$COMMENT)
     if (self$stream$peek() == .sym$PERIOD) {
       # tinsel comment
-      self$stream$expect(.sym$PERIOD)
-      self$tokens$push(token(paste0(.sym$COMMENT, .sym$PERIOD), .type$TINSEL_COMMENT))
+      self$expect(.sym$PERIOD)
+      self$tokens$push(token(.sym$TINSEL_COMMENT, .type$TINSEL_COMMENT,
+                             self$stream$lineno()))
       self$decoration()
     }
 
@@ -33,9 +43,9 @@ scanner <- function(file) {
   }
   self$dreference <- function() {
     if (self$stream$peek() == .sym$LBRACKET) {
-      self$stream$expect(.sym$LBRACKET)
+      self$expect(.sym$LBRACKET)
       self$filename()
-      self$stream$expect(.sym$RBRACKET)
+      self$expect(.sym$RBRACKET)
     }
   }
   self$filename <- function() {
@@ -43,14 +53,15 @@ scanner <- function(file) {
     while (re_match(self$stream$peek(), .sym$FILENAME_CHAR)) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
-    self$tokens$push(token(buffer, .type$FILE_REFERENCE))
+    self$tokens$push(token(buffer, .type$FILE_REFERENCE, self$stream$lineno()))
   }
   self$dcall <- function() {
     self$identifier()
     if (self$stream$peek() == .sym$COLON) {
-      self$stream$expect(.sym$COLON)
-      self$stream$expect(.sym$COLON)
-      self$tokens$push(token(strrep(.sym$COLON, 2), .type$PACKAGE_ACCESSOR))
+      self$expect(.sym$COLON)
+      self$expect(.sym$COLON)
+      self$tokens$push(token(.sym$PACKAGE_ACCESSOR, .type$PACKAGE_ACCESSOR,
+                             self$stream$lineno()))
 
       self$identifier()
     }
@@ -63,13 +74,13 @@ scanner <- function(file) {
     }
   }
   self$nonsyntactic <- function() {
-    self$stream$expect(.sym$BACKTICK)
+    self$expect(.sym$BACKTICK)
     buffer <- NULL
     while (self$stream$peek() != .sym$BACKTICK) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
-    self$tokens$push(token(buffer, .type$IDENTIFIER))
-    self$stream$expect(.sym$BACKTICK)
+    self$tokens$push(token(buffer, .type$IDENTIFIER, self$stream$lineno()))
+    self$expect(.sym$BACKTICK)
   }
   self$syntactic <- function() {
     buffer <- NULL
@@ -77,9 +88,9 @@ scanner <- function(file) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
     if (buffer %in% .reserved) {
-      self$tokens$push(token(buffer, .type$RESERVED))
+      self$tokens$push(token(buffer, .type$RESERVED, self$stream$lineno()))
     } else {
-      self$tokens$push(token(buffer, .type$IDENTIFIER))
+      self$tokens$push(token(buffer, .type$IDENTIFIER, self$stream$lineno()))
     }
   }
   self$quotation <- function() {
@@ -92,7 +103,7 @@ scanner <- function(file) {
       qtype <- .sym$DOUBLEQUOTE
     }
 
-    self$stream$expect(qtype)
+    self$expect(qtype)
     buffer <- NULL
     while (self$stream$peek() != qtype) {
       c <- self$stream$getchar()
@@ -102,23 +113,23 @@ scanner <- function(file) {
         buffer <- paste0(buffer, c)
       }
     }
-    self$stream$expect(qtype)
-    self$tokens$push(token(buffer, .type$STRING))
+    self$expect(qtype)
+    self$tokens$push(token(buffer, .type$STRING, self$stream$lineno()))
   }
   self$number <- function() {
     buffer <- NULL
     while (re_match(self$stream$peek(), .sym$NUMBER)) {
       if (self$stream$peek() == .sym$PERIOD &&
           first_of(buffer, .sym$PERIOD) != -1) {
-        self$stream$expect(.sym$NUMBER)
+        self$expect(.sym$NUMBER)
       } else if (self$stream$peek() == .sym$EXPNOTATION &&
           first_of(buffer, .sym$EXPNOTATION) != -1) {
-        self$stream$expect(.sym$NUMBER)
+        self$expect(.sym$NUMBER)
       } else {
         buffer <- paste0(buffer, self$stream$getchar())
       }
     }
-    self$tokens$push(token(buffer, .type$NUMBER))
+    self$tokens$push(token(buffer, .type$NUMBER, self$stream$lineno()))
   }
 
   self$tokenize <- function() {
@@ -136,7 +147,7 @@ scanner <- function(file) {
         self$stream$getchar()
       }
     }
-    self$tokens$push(token(.sym$EOF, .type$EOF))
+    self$tokens$push(token(.sym$EOF, .type$EOF, self$stream$lineno()))
 
     self$stream$reset()
     self$tokens$tolist()
