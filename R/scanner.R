@@ -8,7 +8,7 @@ scanner <- function(file) {
   self$expect <- function(symbol) {
     c <- self$stream$getchar()
     if (c != symbol) {
-      stop(expected(symbol, c, self$stream$lineno()), call. = FALSE)
+      stop(expected(symbol, c, self$stream$lineno()))
     } else {
       c
     }
@@ -131,6 +131,13 @@ scanner <- function(file) {
     }
     self$tokens$push(token(buffer, .type$NUMBER, self$stream$lineno()))
   }
+  self$assignment <- function() {
+    c <- self$expect(.sym$LESSTHAN)
+    if (self$stream$peek() == .sym$MINUS) {
+      buffer <- paste0(c, self$expect(.sym$MINUS))
+      self$tokens$push(token(buffer, .type$ASSIGNMENT, self$stream$lineno()))
+    }
+  }
 
   self$tokenize <- function() {
     while (self$stream$peek() != .sym$EOF) {
@@ -143,6 +150,8 @@ scanner <- function(file) {
         self$quotation()
       } else if (re_match(c, .sym$NUMBER)) {
         self$number()
+      } else if (c == .sym$LESSTHAN) {
+        self$assignment()
       } else {
         self$stream$getchar()
       }

@@ -37,5 +37,5 @@ elaborate <- function(symbol) {
 expected <- function(symbol, actual, lineno, ...) {
   msg <- sprintf('found "%s" on line %i, expected %s', actual, lineno,
                  elaborate(symbol))
-  condition('expected', msg, ...)
+  condition('expected', msg, call = NULL, ...)
 }

@@ -34,7 +34,7 @@
 
 .type <- list(
   FILE_REFERENCE = 1,
-  FILE_INDEXER = 2,
+  ASSIGNMENT = 2,
   DECORATOR = 3,
   IDENTIFIER = 4,
   PACKAGE_ACCESSOR = 5,
@@ -42,10 +42,13 @@
   RESERVED = 7,
   STRING = 8,
   NUMBER = 9,
+  PACKAGE_NAME = 10,
   EOF = 98,
   UNKNOWN = 99
 )
 
-.reserved <- c('if', 'else', 'repeat', 'while', 'function', 'for', 'in',
-               'next', 'break', 'TRUE', 'FALSE', 'NULL', 'Inf', 'NaN', 'NA',
-               'NA_integer_', 'NA_real_', 'NA_complex_', 'NA_character_', '...')
+.reserved <- c(
+  'if', 'else', 'repeat', 'while', 'function', 'for', 'in',
+  'next', 'break', 'TRUE', 'FALSE', 'NULL', 'Inf', 'NaN', 'NA',
+  'NA_integer_', 'NA_real_', 'NA_complex_', 'NA_character_', '...'
+)
