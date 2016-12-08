@@ -12,7 +12,7 @@ node <- function(token) {
     } else if (is.node(object)) {
       self$children$push(object)
     } else {
-      stop('node cannot handle object of class ', class(object), call. = FALSE)
+      stop('cannot add ', class(object), ' as child', call. = FALSE)
     }
     invisible(self)
   }

@@ -64,10 +64,21 @@ test_that('pop()', {
   expect_equal(hay$pop(), 'chim')
 })
 
-test_that('messing with tolist()', {
+test_that('as.list S3 generic', {
   aircraft <- stack()
   aircraft$push(3030)$push(4040)
+
   expect_equal(as.list(aircraft), list(4040, 3030))
+
   rm('1', envir = aircraft$values, inherits = FALSE)
   expect_error(as.list(aircraft), 'unexpected error coercing stack to list')
+})
+
+test_that('as.character and print S3 generic', {
+  shack <- stack()
+  shack$push(10)$push(20)
+
+  expect_equal(as.character(shack), '[ {20}, {10} ]')
+  expect_output(print(shack), '# A stack: 2 \n1\\s+20 <numeric>\n2\\s+10 <numeric>')
+  expect_output(print(shack, n = 1), '# A stack: 2 \n1\\s+20 <numeric>\n# ... with 1 more items')
 })

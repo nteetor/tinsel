@@ -30,7 +30,7 @@ print.stack <- function(x, ..., n = 10) {
     collapse = '\n'
   )
   if (x$size() > n) {
-    bdy <- paste(bdy, '\n# ... with', x$size() - n, 'more items')
+    bdy <- paste0(bdy, paste('\n# ... with', x$size() - n, 'more items'))
   }
   cat(smry, '\n')
   cat(bdy, '\n')

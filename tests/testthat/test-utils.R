@@ -7,6 +7,12 @@ test_that('%||%', {
   expect_null(NULL %||% NULL)
 })
 
+test_that('trunk util function', {
+  expect_equal(trunk('elephant', 5), 'ele..')
+  expect_equal(trunk('elephant', 2), '..')
+  expect_equal(trunk('elephant', 1), '..')
+})
+
 test_that('char_at()', {
   expect_error(char_at('error', 0), 'index out of bounds')
   expect_error(char_at('ire', 10))

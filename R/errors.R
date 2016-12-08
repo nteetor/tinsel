@@ -23,7 +23,7 @@ elaborate <- function(symbol) {
     } else {
       paste0('"', symbol, '"')
     }
-  } else if (is.numeric(symbol)) {
+  } else if (symbol %in% .type) {
     if (symbol == .type$TINSEL_COMMENT) {
       'a tinsel comment'
     } else {

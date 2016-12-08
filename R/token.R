@@ -28,9 +28,7 @@ field <- function(tokens, f, fun_value) {
 
 `field<-` <- function(tokens, f, value) {
   if (is.null(value)) {
-    stop('token type may not be NULL', call. = FALSE)
-  } else if (!(value %in% .type)) {
-    stop('unknown token type ', value, call. = FALSE)
+    stop('token ', f, ' may not be NULL', call. = FALSE)
   }
 
   if (is.token(tokens)) {
