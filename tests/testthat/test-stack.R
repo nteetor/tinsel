@@ -81,4 +81,7 @@ test_that('as.character and print S3 generic', {
   expect_equal(as.character(shack), '[ {20}, {10} ]')
   expect_output(print(shack), '# A stack: 2 \n1\\s+20 <numeric>\n2\\s+10 <numeric>')
   expect_output(print(shack, n = 1), '# A stack: 2 \n1\\s+20 <numeric>\n# ... with 1 more items')
+
+  expect_equal(as.character(stack()), '[ ]')
+  expect_output(print(stack()), '# A stack: 0')
 })

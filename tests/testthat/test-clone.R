@@ -15,12 +15,15 @@ test_that('aget function', {
 
 test_that('clone function', {
   e <- new.env(parent = emptyenv())
+  class(e) <- 'eclass'
   e$fizz <- 'whizz'
   e$howdy <- 'doody'
   e$ten <- 10
 
   # shallow clone
+  expect_equal(class(clone(e$ten)), class(clone(e$ten)))
   expect_equal(e$ten, clone(e$ten))
+  expect_equal(class(e), class(clone(e)))
   expect_equal(e, clone(e))
 
   # deep clone
@@ -28,6 +31,7 @@ test_that('clone function', {
   e$f$hello <- 'world'
   ln <- clone(e)
 
+  expect_equal(class(e), class(ln))
   expect_equal(e$ten, ln$ten)
   expect_equal(e$f, ln$f)
 

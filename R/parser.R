@@ -3,8 +3,7 @@ is.parser <- function(x) inherits(x, 'parser')
 parser <- function(file) {
   self <- new.env(parent = emptyenv())
   self$scanner <- scanner(file)
-  # TODO fix rev() workaround
-  self$tokens <- stack(rev(as.list(self$scanner$tokenize())))
+  self$tokens <- stack(clone(self$scanner$tokenize())) # stack of a stack reverses
   self$table <- {
     src <- new.env(parent = baseenv())
     source(file, local = src, keep.source = FALSE, verbose = FALSE)
@@ -23,7 +22,7 @@ parser <- function(file) {
   # start => S | `nil`
   self$parse <- function() {
     self$S()
-    self$tree$tolist()
+    self$tree
   }
 
   # S => A | A A

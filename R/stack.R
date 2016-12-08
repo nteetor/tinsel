@@ -10,8 +10,12 @@ as.list.stack <- function(x, ...) {
 }
 
 print.stack <- function(x, ..., n = 10) {
-  elements <- as.list(x)[1:min(n, x$size())]
   smry <- sprintf('# A stack: %d', x$size())
+  if (x$size() == 0) {
+    cat(smry)
+    return(invisible(x))
+  }
+  elements <- as.list(x)[1:min(n, x$size())]
   vals <- vapply(elements, function(e) as.character(e), character(1))
   clsss <- vapply(elements, function(e) class(e), character(1))
   wdths <-
@@ -34,9 +38,11 @@ print.stack <- function(x, ..., n = 10) {
   }
   cat(smry, '\n')
   cat(bdy, '\n')
+  return(invisible(x))
 }
 
 as.character.stack <- function(x, ...) {
+  if (x$size() == 0) return('[ ]')
   paste(
     '[',
     paste('{', vapply(as.list(x), as.character, character(1)), '}',

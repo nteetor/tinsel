@@ -17,13 +17,11 @@ test_that('constructor', {
 
 test_that('tokenize', {
   hp <- scanner('../testfiles/tiny.R')
-  # TODO fix rev() workaround
   ticks <- rev(as.list(hp$tokenize()))
-  expect_equal(length(ticks), 18)
-  # TODO fix rev() workaround
-  expect_equal(ticks, rev(as.list(hp$tokens)))
   types <- type(ticks)
   values <- value(ticks)
+
+  expect_equal(length(ticks), 18)
   expect_equal(types, c(
     .type$TINSEL_COMMENT,
     .type$FILE_REFERENCE,

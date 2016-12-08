@@ -24,8 +24,11 @@ clone <- function(x) {
     return(x)
   }
   if (!length(aget(x, mode = 'environment'))) {
-    return(list2env(as.list.environment(x), parent = emptyenv()))
+    cx <- list2env(as.list.environment(x), parent = emptyenv())
+    class(cx) <- class(x)
+    cx
   }
-  lx <- lapply(as.list.environment(x), clone)
-  list2env(lx)
+  lx <- list2env(lapply(as.list.environment(x), clone))
+  class(lx) <- class(x)
+  lx
 }

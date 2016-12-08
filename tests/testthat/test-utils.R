@@ -8,6 +8,7 @@ test_that('%||%', {
 })
 
 test_that('trunk util function', {
+  expect_equal(trunk('elephant', 10), 'elephant')
   expect_equal(trunk('elephant', 5), 'ele..')
   expect_equal(trunk('elephant', 2), '..')
   expect_equal(trunk('elephant', 1), '..')
