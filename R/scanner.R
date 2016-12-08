@@ -140,6 +140,9 @@ scanner <- function(file) {
   }
 
   self$tokenize <- function() {
+    self$stream$reset()
+    self$tokens <- stack()
+
     while (self$stream$peek() != .sym$EOF) {
       c <- self$stream$peek()
       if (c == .sym$COMMENT) {
@@ -158,8 +161,7 @@ scanner <- function(file) {
     }
     self$tokens$push(token(.sym$EOF, .type$EOF, self$stream$lineno()))
 
-    self$stream$reset()
-    self$tokens$tolist()
+    self$tokens
   }
 
   class(self) <- 'scanner'

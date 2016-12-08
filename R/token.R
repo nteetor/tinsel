@@ -1,34 +1,52 @@
 is.token <- function(x) inherits(x, 'token')
 
-type <- function(tokens) {
+as.character.token <- function(x, ...) {
+  lbl <- if (x$type %in% .type) names(which(.type == x$type)) else x$type
+  val <- trunk(as.character(x$value), 10)
+  sprintf('("%s", %s)', val, lbl)
+}
+
+print.token <- function(x, ...) {
+  cat0(as.character(x), '\n')
+}
+
+field <- function(tokens, f, fun_value) {
   if (is.token(tokens)) {
-    tokens$type
+    tokens[[f]]
   } else if (is.list(tokens)) {
-    vapply(tokens, `[[`, numeric(1), 'type')
+    if (length(tokens) == 0) {
+      NULL
+    } else if (length(tokens) == 1) {
+      tokens[[1]][[f]]
+    } else {
+      vapply(tokens, `[[`, FUN.VALUE = fun_value, f)
+    }
   } else {
     stop('unexpected class ', class(tokens), call. = FALSE)
   }
 }
 
-`type<-` <- function(token, value) {
+`field<-` <- function(tokens, f, value) {
   if (is.null(value)) {
-    stop('type cannot be NULL', call. = FALSE)
+    stop('token type may not be NULL', call. = FALSE)
   } else if (!(value %in% .type)) {
-    stop('unknown type ', value, call. = FALSE)
+    stop('unknown token type ', value, call. = FALSE)
   }
-  token$type <- value
-  invisible(token)
-}
 
-value <- function(tokens) {
   if (is.token(tokens)) {
-    tokens$value
-  } else if (is.list(tokens)) {
-    vapply(tokens, `[[`, character(1), 'value')
+    tokens[[f]] <- value
   } else {
     stop('unexpected class ', class(tokens), call. = FALSE)
   }
+
+  invisible(tokens)
 }
+
+type <- function(t) field(t, 'type', numeric(1))
+`type<-` <- function(t, value) `field<-`(t, 'type', value)
+
+value <- function(t) field(t, 'value', character(1))
+`value<-` <- function(t, value) `field<-`(t, 'value', value)
 
 c.token <- function(t1, t2) {
   if (is.token(t2)) {

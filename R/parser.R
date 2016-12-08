@@ -3,14 +3,15 @@ is.parser <- function(x) inherits(x, 'parser')
 parser <- function(file) {
   self <- new.env(parent = emptyenv())
   self$scanner <- scanner(file)
-  self$tokens <- stack(self$scanner$tokenize())
+  # TODO fix rev() workaround
+  self$tokens <- stack(rev(as.list(self$scanner$tokenize())))
   self$table <- {
     src <- new.env(parent = baseenv())
     source(file, local = src, keep.source = FALSE, verbose = FALSE)
     src
   }
   self$stack <- stack()
-  self$tree <- bract('SOF')
+  self$tree <- node(token('SOF', -1, 1))
 
   self$expect <- function(symbol) {
     if (type(self$tokens$peek()) != symbol) {
@@ -81,7 +82,7 @@ parser <- function(file) {
   # G => `package`::`decorator` | `decorator`
   self$G <- function() {
     t <- self$expect(.type$IDENTIFIER)
-    b <- bract(t)
+    b <- node(t)
 
     if (type(self$tokens$peek()) == .type$PACKAGE_ACCESSOR) {
       tpkg <- t
@@ -89,7 +90,7 @@ parser <- function(file) {
       # reference to package
       newb <- b
       type(newb) <- .type$PACKAGE_NAME
-      b <- bract(self$expect(b))
+      b <- node(self$expect(b))
       acc <- self$expect(.type$PACKAGE_ACCESSOR)
       tcall <- self$expect(.type$IDENTIFIER)
 

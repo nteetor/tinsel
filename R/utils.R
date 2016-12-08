@@ -1,5 +1,13 @@
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
+trunk <- function(.string, n, suffix = '..') {
+  if (nchar(.string) > n) {
+    paste0(substr(.string, 1, n - nchar(suffix)), suffix)
+  } else {
+    .string
+  }
+}
+
 char_at <- function(.string, i) {
   if (abs(i) > nchar(.string) || i == 0) stop('index out of bounds', call. = FALSE)
   j <- (i %% nchar(.string)) + (i < 0)

@@ -15,6 +15,9 @@ test_that('accessor functions', {
   expect_equal(type(arcade), 10)
   expect_equal(value(arcade), 'ten')
   expect_equal(type(c(arcade, ferry)), c(10, 1642))
+
+  expect_equal(value(list(arcade)), 'ten')
+  expect_equal(type(list(arcade)), 10)
   expect_equal(value(c(arcade, ferry)), c('ten', 'ship'))
   expect_equal(value(c(ferry, c(arcade, ferry))), c('ship', 'ten', 'ship'))
 
@@ -29,6 +32,6 @@ test_that('setter functions', {
   expect_silent(type(knights) <- .type$UNKNOWN)
   expect_equal(type(knights), .type$UNKNOWN)
 
-  expect_error(type(knights) <- 1098, 'unknown type 1098')
-  expect_error(type(knights) <- .type$DECORATER, 'type cannot be NULL')
+  expect_error(type(knights) <- 1098, 'unknown token type 1098')
+  expect_error(type(knights) <- .type$DECORATER, 'token type may not be NULL')
 })

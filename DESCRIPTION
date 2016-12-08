@@ -1,9 +1,9 @@
 Package: tinsel
-Title: Transform Functions using Decorators
+Title: Use Decorators to Transform Functions
 Version: 0.0.1
 Authors@R: person("Nathan", "Teetor", email = "nathanteetor@gmail.com", role = c("aut", "cre"))
-Description: Instead of nesting function calls, annotate and transform functions
-    using "#." comments.
+Description: Instead of nesting function calls, decorate and transform
+    functions through the use of a "#." comment.
 License: MIT + file LICENSE
 URL: https://github.com/nteetor/tinsel
 BugReports: https://github.com/nteetor/tinsel/issues
@@ -18,9 +18,10 @@ Collate:
     'utils.R'
     'symbols.R'
     'errors.R'
+    'clone.R'
     'stack.R'
     'token.R'
-    'bract.R'
+    'node.R'
     'iterate.R'
     'switch.R'
     'traversal.R'
