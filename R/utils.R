@@ -1,5 +1,17 @@
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
+tom <- function(...) cat(..., '\n', sep = '')
+
+dimple <- function(x, ..., indent = 0, every = 2) {
+  bar <- sprintf(paste0('%-', every, 's'), '|')
+  bars <- strrep(bar, indent)
+  paste0(
+    paste0(bars, paste0('|', capture.output(print(x, ...))), collapse = '\n'),
+    '\n',
+    paste0(bars, bar)
+  )
+}
+
 trunk <- function(.string, n, suffix = '..') {
   if (nchar(.string) > n) {
     paste0(substr(.string, 1, n - nchar(suffix)), suffix)
@@ -47,7 +59,5 @@ set_names <- function(obj, nm) {
   names(obj) <- nm
   obj
 }
-
-cat0 <- function(...) cat(..., sep = '')
 
 is.connection <- function(x) inherits(x, 'connection')

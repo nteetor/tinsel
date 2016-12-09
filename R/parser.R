@@ -3,14 +3,14 @@ is.parser <- function(x) inherits(x, 'parser')
 parser <- function(file) {
   self <- new.env(parent = emptyenv())
   self$scanner <- scanner(file)
-  self$tokens <- stack(clone(self$scanner$tokenize())) # stack of a stack reverses
+  self$tokens <- stack() # stack of a stack reverses
   self$table <- {
     src <- new.env(parent = baseenv())
     source(file, local = src, keep.source = FALSE, verbose = FALSE)
     src
   }
   self$stack <- stack()
-  self$tree <- node(token('SOF', -1, 1))
+  self$tree <- NULL
 
   self$expect <- function(symbol) {
     if (type(self$tokens$peek()) != symbol) {
@@ -21,6 +21,10 @@ parser <- function(file) {
 
   # start => S | `nil`
   self$parse <- function() {
+    self$tokens <- stack(clone(self$scanner$tokenize()))
+    self$stack <- stack()
+    self$tree <- node(token('', .type$SOF, 1))
+
     self$S()
     self$tree
   }
@@ -36,9 +40,13 @@ parser <- function(file) {
   self$A <- function() {
     t <- self$tokens$pop()
     if (type(t) == .type$TINSEL_COMMENT) {
-      self$stack$push(t)
+      tinselcmt <- node(t)
       self$B()
+      tinselcmt$add(self$stack$pop())
       self$Z()
+      tinselcmt$add(self$stack$pop())
+
+      self$tree$add(tinselcmt)
     }
   }
 
@@ -46,15 +54,18 @@ parser <- function(file) {
   self$Z <- function() {
     t <- self$expect(.type$IDENTIFIER)
     if (!exists(value(t), self$table, inherits = FALSE)) {
-      stop('on line ', t$lineno, ', no definition found for ', value(t),
+      stop('on line ', t$lineno, ', object ', value(t), ' not found',
            call. = FALSE)
     }
-    self$stack$push(t)
+    decoratee <- node(token('', .type$DECORATEE, t$lineno))
+    decoratee$add(t)
+    self$stack$push(decoratee)
   }
 
   # B => [D] E | E
   self$B <- function() {
     t <- self$tokens$peek()
+    self$stack$push(node(token('', .type$DECORATOR, t$lineno)))
     if (type(t) == .type$FILE_REFERENCE) {
       self$D()
       self$E()
@@ -67,9 +78,9 @@ parser <- function(file) {
 
   # D => `file` | `file.extension`
   self$D <- function() {
-    t <- self$expect(.type$FILE_REFERENCE)
-
-    self$tree$push(t)
+    decorator <- self$stack$pop()
+    decorator$add(self$expect(.type$FILE_REFERENCE))
+    self$stack$push(decorator)
   }
 
   # E => G | G(H)
@@ -80,27 +91,23 @@ parser <- function(file) {
 
   # G => `package`::`decorator` | `decorator`
   self$G <- function() {
-    t <- self$expect(.type$IDENTIFIER)
-    b <- node(t)
+    tbd <- self$expect(.type$IDENTIFIER)
+    call_nd <- node(token('', .type$CALL, tbd$lineno))
 
     if (type(self$tokens$peek()) == .type$PACKAGE_ACCESSOR) {
-      tpkg <- t
-      # Construct new "call" node (or whatever the class gets named) with
-      # reference to package
-      newb <- b
-      type(newb) <- .type$PACKAGE_NAME
-      b <- node(self$expect(b))
-      acc <- self$expect(.type$PACKAGE_ACCESSOR)
-      tcall <- self$expect(.type$IDENTIFIER)
+      type(tbd) <- .type$PACKAGE_NAME
+      packageref <- node(tbd)
+      accessor <- node(self$expect(.type$PACKAGE_ACCESSOR))
+      decorator <- node(self$expect(.type$IDENTIFIER))
 
-      self$tree$push(acc)
-      self$tree$push(tcall)
-      self$tree$push(tpkg)
+      accessor$add(packageref)$add(decorator)
+      call_nd$add(accessor)
     } else {
-      self$tree$push(t)
+      decorator <- node(tbd)
+      call_nd$add(decorator)
     }
 
-
+    self$stack$push(call_nd)
   }
 
   # H => I | `nil`   // For now I am not doing little but pass arguments

@@ -3,11 +3,11 @@ is.token <- function(x) inherits(x, 'token')
 as.character.token <- function(x, ...) {
   lbl <- if (x$type %in% .type) names(which(.type == x$type)) else x$type
   val <- trunk(as.character(x$value), 10)
-  sprintf('("%s", %s)', val, lbl)
+  sprintf('("%s" %s)', val, lbl)
 }
 
 print.token <- function(x, ...) {
-  cat0(as.character(x), '\n')
+  tom(as.character(x))
 }
 
 field <- function(tokens, f, fun_value) {

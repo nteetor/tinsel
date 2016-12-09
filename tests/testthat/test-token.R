@@ -11,11 +11,11 @@ test_that('initialize', {
 
 test_that('as.character and print S3 generics', {
   coin <- token('50p', 99, 1)
-  expect_equal(as.character(coin), '("50p", UNKNOWN)')
-  expect_output(print(coin), '("50p", UNKNOWN)')
+  expect_equal(as.character(coin), '("50p" UNKNOWN)')
+  expect_output(print(coin), '("50p" UNKNOWN)')
 
   bit <- token('doge', 101, 1)
-  expect_equal(as.character(bit), '("doge", 101)')
+  expect_equal(as.character(bit), '("doge" 101)')
 })
 
 test_that('field function', {

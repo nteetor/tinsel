@@ -43,6 +43,9 @@
   STRING = 8,
   NUMBER = 9,
   PACKAGE_NAME = 10,
+  DECORATEE = 11,
+  CALL = 12,
+  SOF = 97,
   EOF = 98,
   UNKNOWN = 99
 )

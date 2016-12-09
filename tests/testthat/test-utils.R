@@ -63,7 +63,7 @@ test_that('set_names()', {
   expect_equal(set_names(lyst, c('one', 'two', 'three')), myst)
 })
 
-test_that('cat0()', {
-  expect_output(cat0('hello', 'world'), '^helloworld$')
-  expect_output(cat0('hello   ', 'moon'), '^hello   moon$')
+test_that('tom util function', {
+  expect_output(tom('hello', 'world'), '^helloworld$')
+  expect_output(tom('hello   ', 'moon'), '^hello   moon$')
 })

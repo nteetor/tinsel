@@ -58,8 +58,8 @@ stack <- function(list = NULL) {
     self$values <- new.env(parent = emptyenv())
     self$cursor <- 0
   } else {
-    self$cursor <- length(list)
     list <- as.list(list)
+    self$cursor <- length(list)
     self$values <- list2env(
       set_names(list, seq_along(list)),
       parent = emptyenv()
