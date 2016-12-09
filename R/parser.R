@@ -107,7 +107,8 @@ parser <- function(file) {
       call_nd$add(decorator)
     }
 
-    self$stack$push(call_nd)
+    decorator <- self$stack$pop()
+    self$stack$push(decorator$add(call_nd))
   }
 
   # H => I | `nil`   // For now I am not doing little but pass arguments

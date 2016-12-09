@@ -8,12 +8,12 @@ print.node <- function(x, ...) {
   smry <- '# A node:'
   chtok <- as.character(x$token)
   hdr <- sprintf(paste0('%', nchar(chtok), 's'), paste0('<', class(x$token), '>'))
-  bdy <- paste(hdr, as.character(x$token),
-               paste('# ... with', x$children$size(), if (x$children$size() == 1)
-                 'child' else 'children'),
-               sep = '\n')
+  bdy <- paste(hdr, as.character(x$token), sep = '\n')
+  chldrn <- paste('# ... with', x$children$size(), if (x$children$size() == 1)
+                 'child' else 'children')
   tom(smry)
   tom(bdy)
+  if (length(x$children)) tom(chldrn)
   invisible(x)
 }
 

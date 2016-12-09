@@ -1,5 +1,9 @@
 is.stack <- function(x) inherits(x, 'stack')
 
+length.stack <- function(x) {
+  x$size()
+}
+
 as.list.stack <- function(x, ...) {
   tryCatch(
     unname(mget(as.character(rev(seq_len(x$size()))), envir = x$values)),
