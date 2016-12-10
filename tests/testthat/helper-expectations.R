@@ -20,11 +20,11 @@ expect_line <- function(.traversal, string) {
   }
 }
 
-expect_has_fields <- function(class, ...) {
+expect_fields <- function(class, ...) {
   expect_has_elements(class, Negate(is.function), 'fields', ...)
 }
 
-expect_has_methods <- function(class, ...) {
+expect_methods <- function(class, ...) {
   expect_has_elements(class, is.function, 'methods', ...)
 }
 

@@ -1,23 +1,23 @@
 context(' * testing traversal')
 
-test_that('initialize traversal', {
+test_that('traversal constructor', {
   twavel <- traversal('../testfiles/tongue-twister.txt')
+
   expect_s3_class(twavel, 'traversal')
   expect_true(is.traversal(twavel))
   expect_type(twavel$cursor, 'double')
   expect_equal(twavel$cursor, 1)
   expect_type(twavel$chars, 'character')
   expect_equal(length(twavel$chars), 43)
-
-  expect_has_fields(twavel, 'cursor', 'chars', 'EOF', 'EOL')
-
-  expect_has_methods(twavel, 'at_eof', 'size', 'reset', 'increment_cursor',
-                     'decrement_cursor', 'hasline', 'getchar', 'unget',
-                     'getregex', 'getline', 'peek', 'skipws', 'lineno')
+  expect_fields(twavel, 'cursor', 'chars', 'EOF', 'EOL')
+  expect_methods(twavel, 'at_eof', 'size', 'reset', 'increment_cursor',
+                 'decrement_cursor', 'hasline', 'getchar', 'unget',
+                 'getregex', 'getline', 'peek', 'skipws', 'lineno')
 })
 
-test_that('increment_cursor()', {
+test_that('increment_cursor internal method', {
   twavel <- traversal('../testfiles/tongue-twister.txt')
+
   expect_equal(twavel$cursor, 1)
   twavel$increment_cursor()
   expect_equal(twavel$cursor, 2)
@@ -27,7 +27,7 @@ test_that('increment_cursor()', {
   expect_equal(twavel$cursor, 43)
 })
 
-test_that('decrement_cursor()', {
+test_that('decrement_cursor internal method', {
   twavel <- traversal('../testfiles/tongue-twister.txt')
   expect_equal(twavel$cursor, 1)
   twavel$decrement_cursor()

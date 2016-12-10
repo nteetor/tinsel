@@ -31,7 +31,7 @@ test_that('elaborate function', {
   expect_error(stop(expsyn), 'found "%" on line 1, expected an alphanumeric character, "_", or "."', fixed = TRUE)
 
   expect_equal(elaborate(.type$TINSEL_COMMENT), 'a tinsel comment')
-  expect_equal(elaborate(.type$FILE_REFERENCE), '"FILE_REFERENCE"')
+  expect_equal(elaborate(.type$FILE_REFERENCE), 'FILE_REFERENCE')
 
   expect_error(elaborate(Inf), "cannot elaborate upon Inf, you're on your own")
 })

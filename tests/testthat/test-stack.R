@@ -1,20 +1,19 @@
 context(' * testing stack')
 
-test_that('default constructor', {
+test_that('stack default constructor', {
   smoke <- stack()
+
   expect_s3_class(smoke, 'stack')
   expect_true(is.stack(smoke))
-
-  expect_has_fields(smoke, 'cursor', 'values')
-  expect_has_methods(smoke, 'push', 'pop', 'size', 'peek', 'empty')
-
+  expect_fields(smoke, 'cursor', 'values')
+  expect_methods(smoke, 'push', 'pop', 'size', 'peek', 'empty')
   expect_equal(smoke$size(), 0)
   expect_equal(as.list(smoke), list())
   expect_true(smoke$empty())
   expect_null(smoke$peek())
 })
 
-test_that('vector constructor', {
+test_that('stack vector constructor', {
   sea <- stack(c('fish', 'squid', 'mantis shrimp'))
 
   expect_s3_class(sea, 'stack')
@@ -31,7 +30,7 @@ test_that('vector constructor', {
   expect_true(sea$empty())
 })
 
-test_that('list constructor', {
+test_that('stack list constructor', {
   flapjacks <- stack(list(maple = 'syrup', berries = 'blue'))
 
   expect_s3_class(flapjacks, 'stack')
@@ -47,7 +46,7 @@ test_that('list constructor', {
   expect_true(flapjacks$empty())
 })
 
-test_that('push()', {
+test_that('push internal method', {
   chimney <- stack()
   expect_silent(chimney$push('chim'))
   expect_equal(as.list(chimney), list('chim'))
@@ -55,12 +54,15 @@ test_that('push()', {
   expect_equal(as.list(chimney), rev(list('chim', 'cheree')))
 })
 
-test_that('pop()', {
+test_that('pop function', {
   hay <- stack()
-  expect_silent(hay$push('chim'))
-  expect_silent(hay$push('cheroo'))
+  hay$push('chim')
+  hay$push('cheroo')
+
   expect_equal(as.list(hay), rev(list('chim', 'cheroo')))
+  expect_equal(hay$size(), 2)
   expect_equal(hay$pop(), 'cheroo')
+  expect_equal(hay$size(), 1)
   expect_equal(hay$pop(), 'chim')
 })
 

@@ -29,6 +29,22 @@ descend <- function(x, ..., by = 1, every = 4) {
   }
 }
 
+type.node <- function(x, recursive = TRUE, ...) {
+  if (!recursive) {
+    type(x$token)
+  } else {
+    unlist(c(type(x$token), lapply(x$children, type)))
+  }
+}
+
+contents.node <- function(x, recursive = TRUE, ...) {
+  if (!recursive) {
+    contents(x$token)
+  } else {
+    c(contents(x), vapply(x$children, contents, character(1)))
+  }
+}
+
 node <- function(token) {
   self <- new.env(parent = emptyenv())
 

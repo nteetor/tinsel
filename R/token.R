@@ -2,7 +2,7 @@ is.token <- function(x) inherits(x, 'token')
 
 as.character.token <- function(x, ...) {
   lbl <- if (x$type %in% .type) names(which(.type == x$type)) else x$type
-  val <- trunk(as.character(x$value), 10)
+  val <- trunk(as.character(x$contents), 10)
   sprintf('("%s" %s)', val, lbl)
 }
 
@@ -26,25 +26,61 @@ field <- function(tokens, f, fun_value) {
   }
 }
 
-`field<-` <- function(tokens, f, value) {
-  if (is.null(value)) {
-    stop('token ', f, ' may not be NULL', call. = FALSE)
-  }
+type <- function(x, ...) UseMethod('type')
 
-  if (is.token(tokens)) {
-    tokens[[f]] <- value
-  } else {
-    stop('unexpected class ', class(tokens), call. = FALSE)
-  }
-
-  invisible(tokens)
+type.default <- function(x, ...) {
+  stop('cannot get token type of ', class(x), call. = FALSE)
 }
 
-type <- function(t) field(t, 'type', numeric(1))
-`type<-` <- function(t, value) `field<-`(t, 'type', value)
+type.token <- function(x, ...) {
+  x$type
+}
 
-value <- function(t) field(t, 'value', character(1))
-`value<-` <- function(t, value) `field<-`(t, 'value', value)
+type.list <- function(x, ...) {
+  if (length(x) == 0) {
+    NULL
+  } else if (length(x) == 1) {
+    x[[1]][['type']]
+  } else {
+    vapply(x, `[[`, numeric(1), 'type')
+  }
+}
+
+`type<-` <- function(x, value) UseMethod('type<-')
+
+`type<-.token` <- function(x, value) {
+  if (is.null(value)) {
+    stop('token type may not be NULL', call. = FALSE)
+  }
+  x$type <- value
+  invisible(x)
+}
+
+contents <- function(x, ...) UseMethod('contents')
+
+contents.token <- function(x, ...) {
+  x$contents
+}
+
+contents.list <- function(x, ...) {
+  if (length(x) == 0) {
+    NULL
+  } else if (length(x) == 1) {
+    x[[1]][['contents']]
+  } else {
+    vapply(x, `[[`, character(1), 'contents')
+  }
+}
+
+`contents<-` <- function(x, value) UseMethod('contents<-')
+
+`contents<-.token` <- function(x, value) {
+  if (!is.character(value)) {
+    stop('token value must be of class character', call. = FALSE)
+  }
+  x$contents <- value
+  invisible(x)
+}
 
 c.token <- function(t1, t2) {
   if (is.token(t2)) {
@@ -56,11 +92,11 @@ c.token <- function(t1, t2) {
   }
 }
 
-token <- function(value, type, lineno) {
+token <- function(contents, type, lineno) {
   structure(
     list(
+      contents = contents,
       type = type,
-      value = value,
       lineno = lineno
     ),
     class = 'token'

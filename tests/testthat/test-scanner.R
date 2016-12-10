@@ -2,15 +2,14 @@ context(' * testing scanner')
 
 test_that('constructor', {
   police <- scanner('../testfiles/tiny.R')
+
   expect_s3_class(police, 'scanner')
   expect_true(is.scanner(police))
-
-  expect_has_fields(police, 'stream', 'tokens')
-  expect_has_methods(police, 'comment', 'comments', 'dcall', 'decoration',
-                     'dreference', 'filename', 'identifier', 'nonsyntactic',
-                     'syntactic', 'quotation', 'number', 'tokenize',
-                     'assignment', 'expect')
-
+  expect_fields(police, 'stream', 'tokens')
+  expect_methods(police, 'comment', 'comments', 'dcall', 'decoration',
+                 'dreference', 'filename', 'identifier', 'nonsyntactic',
+                 'syntactic', 'quotation', 'number', 'tokenize', 'assignment',
+                 'expect')
   expect_s3_class(police$tokens, 'stack')
   expect_s3_class(police$stream, 'traversal')
 })
@@ -19,7 +18,7 @@ test_that('tokenize', {
   hp <- scanner('../testfiles/tiny.R')
   ticks <- rev(as.list(hp$tokenize()))
   types <- type(ticks)
-  values <- value(ticks)
+  contents <- contents(ticks)
 
   expect_equal(length(ticks), 18)
   expect_equal(types, c(
@@ -42,7 +41,7 @@ test_that('tokenize', {
     .type$IDENTIFIER,
     .type$EOF
   ))
-  expect_equal(values, c(
+  expect_equal(contents, c(
     '#.',
     'separate-file',
     'pack',

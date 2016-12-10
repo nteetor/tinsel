@@ -13,10 +13,11 @@ parser <- function(file) {
   self$tree <- NULL
 
   self$expect <- function(symbol) {
-    if (type(self$tokens$peek()) != symbol) {
-      stop(expected(symbol, t$value, t$lineno))
+    t <- self$tokens$pop()
+    if (type(t) != symbol) {
+      stop(expected(symbol, contents(t), t$lineno))
     }
-    self$tokens$pop()
+    t
   }
 
   # start => S | `nil`
@@ -36,25 +37,25 @@ parser <- function(file) {
     }
   }
 
-  # A => #. B Z | \R
+  # A => #. B C | \R
   self$A <- function() {
     t <- self$tokens$pop()
     if (type(t) == .type$TINSEL_COMMENT) {
       tinselcmt <- node(t)
       self$B()
       tinselcmt$add(self$stack$pop())
-      self$Z()
+      self$C()
       tinselcmt$add(self$stack$pop())
 
       self$tree$add(tinselcmt)
     }
   }
 
-  # Z => `variable name`    // looked up in self$table
-  self$Z <- function() {
+  # C => `variable name`    // looked up in self$table
+  self$C <- function() {
     t <- self$expect(.type$IDENTIFIER)
-    if (!exists(value(t), self$table, inherits = FALSE)) {
-      stop('on line ', t$lineno, ', object ', value(t), ' not found',
+    if (!exists(contents(t), self$table, inherits = FALSE)) {
+      stop('on line ', t$lineno, ', object ', contents(t), ' not found',
            call. = FALSE)
     }
     decoratee <- node(token('', .type$DECORATEE, t$lineno))

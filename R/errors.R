@@ -27,7 +27,7 @@ elaborate <- function(symbol) {
     if (symbol == .type$TINSEL_COMMENT) {
       'a tinsel comment'
     } else {
-      paste0('"', names(which(.type == symbol)), '"')
+      names(which(.type == symbol))
     }
   } else {
     stop("cannot elaborate upon ", symbol, ", you're on your own", call. = FALSE)
