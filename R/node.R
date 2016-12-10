@@ -32,8 +32,10 @@ descend <- function(x, ..., by = 1, every = 4) {
 type.node <- function(x, recursive = TRUE, ...) {
   if (!recursive) {
     type(x$token)
+  } else if (length(x$children) == 0) {
+    type(x$token)
   } else {
-    unlist(c(type(x$token), lapply(x$children, type)))
+    unlist(c(type(x$token), lapply(x$children, type.node)))
   }
 }
 

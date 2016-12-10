@@ -36,7 +36,8 @@ test_that('type S3 method', {
   leaf <- node(token('maple', 9, 1))
 
   expect_equal(type(leaf), 9)
-  expect_equal(type(leaf$add(token('new', 3, 1))), c(9, 3))
+  leaf$add(token('new', 3, 1))
+  expect_equal(type(leaf), c(9, 3))
 })
 
 test_that('contents S3 method', {
