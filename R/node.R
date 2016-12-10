@@ -35,7 +35,7 @@ type.node <- function(x, recursive = TRUE, ...) {
   } else if (length(x$children) == 0) {
     type(x$token)
   } else {
-    unlist(c(type(x$token), lapply(x$children, type.node)))
+    unlist(c(type(x$token), lapply(as.list.stack(x$children), type.node)))
   }
 }
 
