@@ -10,26 +10,10 @@ print.token <- function(x, ...) {
   tom(as.character(x))
 }
 
-field <- function(tokens, f, fun_value) {
-  if (is.token(tokens)) {
-    tokens[[f]]
-  } else if (is.list(tokens)) {
-    if (length(tokens) == 0) {
-      NULL
-    } else if (length(tokens) == 1) {
-      tokens[[1]][[f]]
-    } else {
-      vapply(tokens, `[[`, FUN.VALUE = fun_value, f)
-    }
-  } else {
-    stop('unexpected class ', class(tokens), call. = FALSE)
-  }
-}
-
 type <- function(x, ...) UseMethod('type')
 
 type.default <- function(x, ...) {
-  stop('cannot get token type of ', class(x), call. = FALSE)
+  stop('no token type for class ', class(x), call. = FALSE)
 }
 
 type.token <- function(x, ...) {
@@ -57,6 +41,10 @@ type.list <- function(x, ...) {
 }
 
 contents <- function(x, ...) UseMethod('contents')
+
+contents.default <- function(x, ...) {
+  stop('no token contents for class ', class(x), call. = FALSE)
+}
 
 contents.token <- function(x, ...) {
   x$contents

@@ -14,6 +14,12 @@ test_that('trunk util function', {
   expect_equal(trunk('elephant', 1), '..')
 })
 
+test_that('dimple util function', {
+  expect_equal(dimple(as.name('Qvothe')), '|Qvothe\n| ')
+  expect_equal(dimple(as.name('Denna'), indent = 2), '| | |Denna\n| | | ')
+  expect_equal(dimple(as.name('Sim'), indent = 1, every = 4), '|   |Sim\n|   |   ')
+})
+
 test_that('char_at()', {
   expect_error(char_at('error', 0), 'index out of bounds')
   expect_error(char_at('ire', 10))

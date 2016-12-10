@@ -36,8 +36,10 @@ test_that('type S3 method', {
   leaf <- node(token('maple', 9, 1))
 
   expect_equal(type(leaf), 9)
+
   leaf$add(token('new', 3, 1))
   expect_equal(type(leaf), c(9, 3))
+  expect_equal(type(leaf, recursive = FALSE), 9)
 })
 
 test_that('contents S3 method', {
@@ -45,4 +47,36 @@ test_that('contents S3 method', {
 
   expect_equal(contents(leaf), 'maple')
   expect_equal(contents(leaf$add(token('syrup', 1, 1))), c('maple', 'syrup'))
+})
+
+test_that('as.character and print S3 methods', {
+  leaf <- node(token('maple', .type$STRING, 1))
+  leaf$add(token('star', .type$IDENTIFIER, 1))
+
+  expect_equal(as.character(leaf), '("maple" STRING) [1]')
+  expect_output(print(leaf), paste(
+    '# A node:',
+    '         <token>',
+    '("maple" STRING)',
+    '# ... with 1 child',
+    sep = '\n'
+  ), fixed = TRUE)
+})
+
+test_that('descend function', {
+  nod <- (parser('../testfiles/tiny.R'))$parse()
+
+  expect_output(descend(nod), paste(
+    'SOF',
+    'TINSEL_COMMENT',
+    'DECORATEE',
+    'IDENTIFIER',
+    'DECORATOR',
+    'CALL',
+    'PACKAGE_ACCESSOR',
+    'IDENTIFIER',
+    'PACKAGE_NAME',
+    'FILE_REFERENCE',
+    sep = '.*'
+  ))
 })

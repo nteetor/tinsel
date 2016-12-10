@@ -20,7 +20,7 @@ print.node <- function(x, ...) {
 descend <- function(x, ..., by = 1, every = 4) {
   indent <- list(...)[['indent']] %||% 0
   tom(dimple(x, indent = indent, every = every))
-  chitlins <- rev(as.list(x$children))
+  chitlins <- as.list(x$children)
   for (c in chitlins) {
     descend(c, indent = indent + by)
   }
