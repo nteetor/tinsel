@@ -6,7 +6,8 @@ dimple <- function(x, ..., indent = 0, every = 2) {
   bar <- sprintf(paste0('%-', every, 's'), '|')
   bars <- strrep(bar, indent)
   paste0(
-    paste0(bars, paste0('|', capture.output(print(x, ...))), collapse = '\n'),
+    paste0(bars, paste0('|', utils::capture.output(print(x, ...))),
+           collapse = '\n'),
     '\n',
     paste0(bars, bar)
   )

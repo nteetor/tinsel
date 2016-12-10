@@ -11,6 +11,8 @@ Encoding: UTF-8
 RoxygenNote: 5.0.1
 Depends:
     R (>= 3.3.1)
+Imports:
+    utils
 Suggests:
     testthat,
     rstudioapi
@@ -19,9 +21,9 @@ Collate:
     'symbols.R'
     'errors.R'
     'clone.R'
-    'stack.R'
     'token.R'
     'node.R'
+    'stack.R'
     'iterate.R'
     'switch.R'
     'traversal.R'
