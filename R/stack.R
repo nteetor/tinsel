@@ -4,6 +4,16 @@ length.stack <- function(x) {
   x$size()
 }
 
+head.stack <- function(x, n = 6L, ...) {
+  n <- min(length(x), n)
+  stack(rev(as.list(x)[1:n]))
+}
+
+tail.stack <- function(x, n = 6L, ...) {
+  n <- max(length(x) - n, 0)
+  stack(rev(as.list(x)[n:length(x)]))
+}
+
 as.list.stack <- function(x, ...) {
   tryCatch(
     unname(mget(as.character(rev(seq_len(x$size()))), envir = x$values)),

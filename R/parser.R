@@ -4,7 +4,7 @@ parser <- function(file) {
   self <- new.env(parent = emptyenv())
   self$scanner <- scanner(file)
   self$tokens <- stack() # stack of a stack reverses
-  self$table <- {
+  self$lookup <- {
     src <- new.env(parent = baseenv())
     source(file, local = src, keep.source = FALSE, verbose = FALSE)
     src
@@ -20,9 +20,17 @@ parser <- function(file) {
     t
   }
 
+  self$shift <- function() {
+    self$stack$push(node(self$tokens$pop()))
+  }
+
+  self$reduce <- function(symbols, to) {
+
+  }
+
   # start => S | `nil`
   self$parse <- function() {
-    self$tokens <- stack(clone(self$scanner$tokenize()))
+    self$tokens <- clone(self$scanner$tokenize())
     self$stack <- stack()
     self$tree <- node(token('', .type$SOF, 1))
 
@@ -30,92 +38,64 @@ parser <- function(file) {
     self$tree
   }
 
-  # S => A | A A
+  # S => A | S A
   self$S <- function() {
     while (type(self$tokens$peek()) != .type$EOF) {
       self$A()
     }
   }
 
-  # A => #. B C | \R
+  # A => B | C
   self$A <- function() {
-    t <- self$tokens$pop()
-    if (type(t) == .type$TINSEL_COMMENT) {
-      tinselcmt <- node(t)
-      self$B()
-      tinselcmt$add(self$stack$pop())
-      self$C()
-      tinselcmt$add(self$stack$pop())
-
-      self$tree$add(tinselcmt)
-    }
+    self$B()
+    self$C()
   }
 
-  # C => `variable name`    // looked up in self$table
+  # B => D E | E
+  self$B <- function() {
+    self$D()
+    self$E()
+  }
+
+  # C => `identifier`
   self$C <- function() {
     t <- self$expect(.type$IDENTIFIER)
-    if (!exists(contents(t), self$table, inherits = FALSE)) {
-      stop('on line ', t$lineno, ', object ', contents(t), ' not found',
-           call. = FALSE)
-    }
-    decoratee <- node(token('', .type$DECORATEE, t$lineno))
-    decoratee$add(t)
-    self$stack$push(decoratee)
+    n <- self$stack$pop()
+    n$add(t)
+    self$stack$push(n)
   }
 
-  # B => [D] E | E
-  self$B <- function() {
-    t <- self$tokens$peek()
-    self$stack$push(node(token('', .type$DECORATOR, t$lineno)))
-    if (type(t) == .type$FILE_REFERENCE) {
-      self$D()
-      self$E()
-    } else if (type(t) == .type$IDENTIFIER) {
-      self$E()
-    } else {
-      self$expect(.type$IDENTIFIER) # not great
-    }
-  }
-
-  # D => `file` | `file.extension`
+  # D => G | G G
   self$D <- function() {
-    decorator <- self$stack$pop()
-    decorator$add(self$expect(.type$FILE_REFERENCE))
-    self$stack$push(decorator)
+
   }
 
-  # E => G | G(H)
+  # E => `R expression`
   self$E <- function() {
-    self$G()
-    #self$H()  # currently not handling arguments to decorators
+    t <- self$expect(.type$IDENTIFIER) # | STRING | NUMBER
+    n <- self$stack$pop()
+    n$add(t)
+    self$stack$push(n)
   }
 
-  # G => `package`::`decorator` | `decorator`
+  # G => H [I] J | H J
   self$G <- function() {
-    tbd <- self$expect(.type$IDENTIFIER)
-    call_nd <- node(token('', .type$CALL, tbd$lineno))
-
-    if (type(self$tokens$peek()) == .type$PACKAGE_ACCESSOR) {
-      type(tbd) <- .type$PACKAGE_NAME
-      packageref <- node(tbd)
-      accessor <- node(self$expect(.type$PACKAGE_ACCESSOR))
-      decorator <- node(self$expect(.type$IDENTIFIER))
-
-      accessor$add(packageref)$add(decorator)
-      call_nd$add(accessor)
-    } else {
-      decorator <- node(tbd)
-      call_nd$add(decorator)
-    }
-
-    decorator <- self$stack$pop()
-    self$stack$push(decorator$add(call_nd))
+    self$H()
+    self$I()
+    self$J()
   }
 
-  # H => I | `nil`   // For now I am not doing little but pass arguments
-  #                  // to the decorator
+  # H => #.
   self$H <- function() {
-    NULL
+    if (type(self$tokens$peek()) == .type$TINSEL_COMMENT) {
+      t <- self$expect(.type$TINSEL_COMMENT)
+      if (type(self$stack$peek()) == .type$TINSEL_EXPR) {
+        n <- node(token('', .type$DECORATORS, t$lineno))
+        self$stack$push(n)
+      } else if (type(self$stack$peek()) == .type$DECORATORS) {
+#        n <- self
+      }
+    }
   }
 
   # I => \R | \R, I

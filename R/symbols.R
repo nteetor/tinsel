@@ -1,11 +1,14 @@
 .sym <- list(
   EOF = 'EOF',
   EOL = '\n',
+  EQUALS = '=',
   COMMENT = '#',
   LPAREN = '(',
   RPAREN = ')',
   LBRACKET = '[',
   RBRACKET = ']',
+  LBRACE = '}',
+  RBRACE = '{',
   LESSTHAN = '<',
   MINUS = '-',
   COLON = ':',
@@ -18,11 +21,8 @@
   EXPNOTATION = 'e',
   NUMBER = '[0-9.e]',
   LETTER = '[a-zA-Z]',
-  # when using decorators from separate files:
-  #   1. the file must not contain a right brace
-  #   2. we assume the operating system will impose file name requirements
-  #   3. hopefully this allows filenames of different locales
-  FILENAME_CHAR = '[^\\]]',
+  ASSIGNOP = '(=|<-)',
+  FILENAME_CHAR = '[^$]',
   # syntactic variable names, see ?Quotes
   SYNTACTIC_CHAR = '[\\w.]',
   # quoted characters are anything except a backtick
@@ -45,9 +45,27 @@
   PACKAGE_NAME = 10,
   DECORATEE = 11,
   CALL = 12,
-  SOF = 97,
-  EOF = 98,
-  UNKNOWN = 99
+  DECORATORS = 13,
+  TINSEL_EXPR = 14,
+  FILE_NAME = 15,
+  FILE_ACCESSOR = 16,
+  FUNCTION_NAME = 17,
+  EQUALS = 18,
+  EXPRESSION = 19,
+  FUNCTION_REFERENCE = 20,
+  LPAREN = 22,
+  ARGUMENTS = 23,
+  RPAREN = 24,
+  ASSIGNOP = 25,
+  FUNCTION_DEC = 26,
+  FUNCTION_STMT = 27,
+  RELATIONALOP = 28,
+  EXTRACTOP = 29,
+  SOF = 95,
+  EOL = 96,
+  EOF = 97,
+  UNKNOWN = 98,
+  LOOKAHEAD = 99
 )
 
 .reserved <- c(

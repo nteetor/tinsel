@@ -1,6 +1,6 @@
-#. [separate-file] pack::deck
+#. path/to/file$deck
 fun <- function(...) {
-  numeric_literal <- 6.02e23
-  `return value` <- "Hello, 'world'!"
-  return(`return value`)
+  moles <- 6.02e23
+  `greetings` = "Hello, 'world'!"
+  return(greetings)
 }

@@ -14,38 +14,17 @@ scanner <- function(file) {
     }
   }
 
-  self$comments <- function() {
-    while (self$stream$peek() == .sym$COMMENT) {
-      self$comment()
-
-      # skip over leading white space before a comment
-      self$stream$skipws()
-    }
-  }
   self$comment <- function() {
-    self$expect(.sym$COMMENT)
+    c1 <- self$expect(.sym$COMMENT)
     if (self$stream$peek() == .sym$PERIOD) {
       # tinsel comment
-      self$expect(.sym$PERIOD)
-      self$tokens$push(token(.sym$TINSEL_COMMENT, .type$TINSEL_COMMENT,
+      c2 <- self$expect(.sym$PERIOD)
+      self$tokens$push(token(paste0(c1, c2), .type$TINSEL_COMMENT,
                              self$stream$lineno()))
-      self$decoration()
-    }
-
-    # digest characters through end of line (including newline)
-    self$stream$getline()
-  }
-  self$decoration <- function() {
-    self$stream$skipws()
-    self$dreference()
-    self$stream$skipws()
-    self$dcall()
-  }
-  self$dreference <- function() {
-    if (self$stream$peek() == .sym$LBRACKET) {
-      self$expect(.sym$LBRACKET)
+      self$stream$skipws()
       self$filename()
-      self$expect(.sym$RBRACKET)
+    } else {
+      self$stream$getline()
     }
   }
   self$filename <- function() {
@@ -55,17 +34,6 @@ scanner <- function(file) {
     }
     self$tokens$push(token(buffer, .type$FILE_REFERENCE, self$stream$lineno()))
   }
-  self$dcall <- function() {
-    self$identifier()
-    if (self$stream$peek() == .sym$COLON) {
-      self$expect(.sym$COLON)
-      self$expect(.sym$COLON)
-      self$tokens$push(token(.sym$PACKAGE_ACCESSOR, .type$PACKAGE_ACCESSOR,
-                             self$stream$lineno()))
-
-      self$identifier()
-    }
-  }
   self$identifier <- function() {
     if (self$stream$peek() == .sym$BACKTICK) {
       self$nonsyntactic()
@@ -74,46 +42,38 @@ scanner <- function(file) {
     }
   }
   self$nonsyntactic <- function() {
-    self$expect(.sym$BACKTICK)
-    buffer <- NULL
+    buffer <- self$expect(.sym$BACKTICK)
     while (self$stream$peek() != .sym$BACKTICK) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
+    buffer <- paste0(buffer, self$expect(.sym$BACKTICK))
     self$tokens$push(token(buffer, .type$IDENTIFIER, self$stream$lineno()))
-    self$expect(.sym$BACKTICK)
   }
   self$syntactic <- function() {
     buffer <- NULL
     while (re_match(self$stream$peek(), .sym$SYNTACTIC_CHAR)) {
       buffer <- paste0(buffer, self$stream$getchar())
     }
-    if (buffer %in% .reserved) {
+    if (buffer == 'function') {
+      self$tokens$push(token(buffer, .type$FUNCTION_STMT, self$stream$lineno()))
+    } else if (buffer %in% .reserved) {
       self$tokens$push(token(buffer, .type$RESERVED, self$stream$lineno()))
     } else {
       self$tokens$push(token(buffer, .type$IDENTIFIER, self$stream$lineno()))
     }
   }
   self$quotation <- function() {
-    # this may seem odd, but is necessary
-    if (self$stream$peek() == .sym$SINGLEQUOTE) {
-      qtype <- .sym$SINGLEQUOTE
-    } else {
-      # here is where we catch a potential incorrect character by assuming
-      # if not single quote then double quote
-      qtype <- .sym$DOUBLEQUOTE
-    }
-
-    self$expect(qtype)
-    buffer <- NULL
-    while (self$stream$peek() != qtype) {
+    quotype <- self$stream$getchar()
+    buffer <- quotype
+    while (self$stream$peek() != quotype) {
       c <- self$stream$getchar()
-      if (c == .sym$BACKSLASH && self$stream$peek() == qtype) {
+      if (c == .sym$BACKSLASH && self$stream$peek() == quotype) {
         buffer <- paste0(buffer, c, self$stream$getchar())
       } else {
         buffer <- paste0(buffer, c)
       }
     }
-    self$expect(qtype)
+    buffer <- paste0(buffer, self$expect(quotype))
     self$tokens$push(token(buffer, .type$STRING, self$stream$lineno()))
   }
   self$number <- function() {
@@ -132,10 +92,47 @@ scanner <- function(file) {
     self$tokens$push(token(buffer, .type$NUMBER, self$stream$lineno()))
   }
   self$assignment <- function() {
-    c <- self$expect(.sym$LESSTHAN)
-    if (self$stream$peek() == .sym$MINUS) {
-      buffer <- paste0(c, self$expect(.sym$MINUS))
-      self$tokens$push(token(buffer, .type$ASSIGNMENT, self$stream$lineno()))
+    buffer <- self$stream$getchar()
+    if (buffer == .sym$LESSTHAN) {
+      if (self$stream$peek() == .sym$MINUS) {
+        buffer <- paste0(buffer, self$expect(.sym$MINUS))
+        self$tokens$push(token(buffer, .type$ASSIGNOP, self$stream$lineno()))
+      } else {
+        self$tokens$push(token(c, .type$RELATIONALOP, self$stream$lineno()))
+      }
+    } else if (buffer == .sym$EQUALS) {
+      self$tokens$push(token(buffer, .type$ASSIGNOP, self$stream$lineno()))
+    }
+  }
+  self$expression <- function() {
+    lineno <- self$stream$lineno()
+    buffer <- self$expect(.sym$RBRACE)
+    braces <- 1
+    while (braces != 0) {
+      c <- self$stream$getchar()
+
+      if (c == .sym$EOF) {
+        stop('reached end of file while parsing expression starting on line ',
+             self$stream$lineno(), call. = FALSE)
+      } else if (c == .sym$LBRACE) {
+        braces <- braces + 1
+      } else if (c == .sym$RBRACE) {
+        braces <- braces - 1
+      }
+
+      buffer <- paste0(buffer, c)
+    }
+    self$tokens$push(token(buffer, .type$EXPRESSION, lineno))
+  }
+  self$extract <- function() {
+    buffer <- self$stream$getchar()
+    if (buffer == .sym$LBRACKET) {
+      if (self$stream$peek() == .sym$LBRACKET) {
+        buffer <- paste0(buffer, self$stream$getchar())
+      }
+      self$tokens$push(token(buffer, .type$EXTRACTOP, self$stream$lineno()))
+    } else if (buffer == .sym$DOLLARSIGN) {
+      self$tokens$push(token(buffer, .type$EXTRACTOP, self$stream$lineno()))
     }
   }
 
@@ -146,15 +143,17 @@ scanner <- function(file) {
     while (self$stream$peek() != .sym$EOF) {
       c <- self$stream$peek()
       if (c == .sym$COMMENT) {
-        self$comments()
+        self$comment()
       } else if (re_match(c, .sym$IDENTIFIER_CHAR)) {
         self$identifier()
       } else if (c == .sym$SINGLEQUOTE || c == .sym$DOUBLEQUOTE) {
         self$quotation()
       } else if (re_match(c, .sym$NUMBER)) {
         self$number()
-      } else if (c == .sym$LESSTHAN) {
+      } else if (c == .sym$EQUALS || c == .sym$LESSTHAN) {
         self$assignment()
+      } else if (c == .sym$DOLLARSIGN || c == .sym$LBRACKET) {
+        self$extract()
       } else {
         self$stream$getchar()
       }
