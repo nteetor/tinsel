@@ -1,4 +1,5 @@
-<h1 align="center"><img alt="tinsel" width=400 src="inst/logo.png"/><br></h1>
+<h1 align="center">
+<img alt="tinsel" src="inst/logo.png"/><br></h1>
 
 [travis]: https://travis-ci.org/nteetor/tinsel.svg?branch=dev "the sixth sick sheik's sixth sheep's sick"
 [appveyor]: https://ci.appveyor.com/api/projects/status/github/nteetor/tinsel?branch=dev&svg=true "because everyone else was doing it"
