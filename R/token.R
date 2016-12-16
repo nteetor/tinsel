@@ -26,7 +26,7 @@ type.list <- function(x, ...) {
   } else if (length(x) == 1) {
     x[[1]][['type']]
   } else {
-    vapply(x, `[[`, numeric(1), 'type')
+    vapply(x, type, numeric(1))
   }
 }
 

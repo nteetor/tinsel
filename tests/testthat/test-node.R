@@ -38,8 +38,8 @@ test_that('type S3 method', {
   expect_equal(type(leaf), 9)
 
   leaf$add(token('new', 3, 1))
-  expect_equal(type(leaf), c(9, 3))
-  expect_equal(type(leaf, recursive = FALSE), 9)
+  expect_equal(type(leaf), 9)
+  expect_equal(type(leaf, recursive = TRUE), c(9, 3))
 })
 
 test_that('contents S3 method', {

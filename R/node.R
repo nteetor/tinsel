@@ -29,7 +29,7 @@ descend <- function(x, ..., by = 1, every = 4) {
   }
 }
 
-type.node <- function(x, recursive = TRUE, ...) {
+type.node <- function(x, recursive = FALSE, ...) {
   if (!recursive) {
     type(x$token)
   } else if (length(x$children) == 0) {

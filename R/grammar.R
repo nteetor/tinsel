@@ -1,192 +1,274 @@
 lyst <- function(...) {
   args <- list(...)
   if (length(args) == 0) return(list())
-  evlenv <- list2env(.type, parent = emptyenv())
-  evlenv$lookahead <- 'lookahead'
-  evald <- vapply(names(args), get, numeric(1), envir = evlenv, inherits = FALSE)
-  names(args) <- evald
+  names(args) <- vapply(names(args),
+                        function(nm) {
+                          if (is.null(.type[[nm]])) {
+                            stop(noquote(nm), ' not in .type', call. = FALSE)
+                          } else {
+                            .type[[nm]]
+                          }
+                        }, numeric(1))
   args
 }
 
-.reduce <- lyst(
-  TINSEL_COMMENT = lyst(
-    IDENTIFIER = list(reduce = .type$TINSEL_COMMENT, to = .type$DECORATORS)
-  ),
-  FILE_NAME = lyst(),
-  DECORATORS = lyst(
-    IDENTIFIER = lyst(
-      EXTRACTOP = list(reduce = .type$IDENTIFIER, to = .type$FILE_NAME),
-      ASSIGNOP = list(reduce = .type$DECORATEE, to = .type$IDENTIFIER)
-    ),
-    FILE_NAME = lyst(
-      EXTRACTOP = lyst(
-        IDENTIFIER = list(reduce = c(.type$FILE_NAME, .type$EXTRACTOP), to = .type$FILE_REFERENCE)
+.actions <- with(.type, lyst(
+  STATEMENT_LIST = lyst(
+    REXPRESSION = lyst(
+      SHIFT = TRUE,
+      REXPRESSION = lyst(
+        REDUCE = list(from = c(STATEMENT_LIST, REXPRESSION), to = STATEMENT_LIST)
       )
     ),
-    FILE_REFERENCE = lyst(
+    TINSEL_COMMENT = lyst(
+      SHIFT = TRUE,
       IDENTIFIER = lyst(
-        IDENTIFIER = list(reduce = .type$IDENTIFIER, to = .type$FUNCTION_NAME)
-      ),
-      FUNCTION_NAME = lyst(
-        IDENTIFIER = list(reduce = c(.type$FILE_REFERENCE, .type$FUNCTION_NAME), to = .type$FUNCTION_REFERENCE)
+        REDUCE = list(from = TINSEL_COMMENT, to = DECORATORS)
       )
     ),
-    FUNCTION_REFERENCE = lyst(
-      LPAREN = lyst(
-        IDENTIFIER = list(reduce = .type$LPAREN, to = .type$ARGUMENTS)
+    TINSEL_STATEMENT = lyst(
+      REXPRESSION = lyst(
+        REDUCE = list(from = c(STATEMENT_LIST, TINSEL_STATEMENT),
+                      to = STATEMENT_LIST)
+      )
+    ),
+    DECORATORS = lyst(
+      DECORATEE = lyst(
+        REXPRESSION = lyst(
+          REDUCE = list(from = c(DECORATORS, DECORATEE),
+                        to = TINSEL_STATEMENT)
+        ),
+        TINSEL_COMMENT = lyst(
+          REDUCE = list(from = c(DECORATORS, DECORATEE),
+                        to = TINSEL_STATEMENT)
+        )
       ),
-      ARGUMENTS = lyst(
+      IDENTIFIER = lyst(
+        SHIFT = TRUE,
+        ASSIGN_OPERATOR = lyst(
+          REDUCE = list(from = IDENTIFIER, to = FUNCTION_NAME)
+        ),
+        EXTRACT_OPERATOR = lyst(
+          SHIFT = TRUE,
+          IDENTIFIER = lyst(
+            REDUCE = list(from = c(IDENTIFIER, EXTRACT_OPERATOR),
+                          to = FILE_REFERENCE)
+          )
+        ),
         IDENTIFIER = lyst(
-          ASSIGNOP = lyst(
-            EXPRESSION = lyst(
-              IDENTIFIER = list(reduce = c(.type$IDENTIFIER, .type$ASSIGNOP, .type$EXPRESSION), to = .type$ASSIGNMENT)
+          REDUCE = list(from = IDENTIFIER, to = FUNCTION_REFERENCE)
+        )
+      ),
+      FILE_REFERENCE = lyst(
+        IDENTIFIER = lyst(
+          SHIFT = TRUE,
+          IDENTIFIER = lyst(
+            REDUCE = list(from = IDENTIFIER, to = FUNCTION_NAME),
+            LPAREN = lyst(
+              REDUCE = list(from = IDENTIFIER, to = FUNCTION_NAME)
             )
           )
         ),
-        ASSIGNMENT = lyst(
-          IDENTIFIER = list(reduce = c(.type$ARGUMENTS, .type$ASSIGNMENT), to = .type$ARGUMENTS)
-        ),
-        EXPRESSION = lyst(
-          IDENTIFIER = list(reduce = c(.type$ARGUMENTS, .type$EXPRESSION), to = .type$ARGUMENTS)
-        ),
-        RPAREN = lyst(
-          TINSEL_COMMENT = list(reduce = c(.type$ARGUMENTS, .type$RPAREN), to = .type$ARGUMENTS)
-        ),
-        TINSEL_COMMENT = list(reduce = c(.type$FUNCTION_REFERENCE, .type$ARGUMENTS), to = .type$DECORATOR)
-      )
-    ),
-    DECORATOR = lyst(
-      TINSEL_COMMENT = list(reduce = c(.type$DECORATORS, .type$DECORATED), to = .type$DECORATORS),
-      IDENTIFIER = list(reduce = c(.type$DECORATORS, .type$DECORATOR), to = .type$DECORATORS)
-    )
-  )
-)
-
-.shift <- lyst(
-  LOOKAHEAD = .type$TINSEL_COMMENT,
-  DECORATORS = lyst(
-    LOOKAHEAD = .type$IDENTIFIER,
-    FILE_NAME = lyst(
-      LOOKAHEAD = .type$FILE_ACCESSOR
-    ),
-    FILE_REFERENCE = lyst(
-      LOOKAHEAD = .type$IDENTIFIER
-    ),
-    FUNCTION_REFERENCE = lyst(
-      LOOKAHEAD = .type$LPAREN,
-      ARGUMENTS = lyst(
-        LOOKAHEAD = c(.type$IDENTIFIER, .type$EXPRESSION, .type$RPAREN),
-        IDENTIFIER = lyst(
-          LOOKAHEAD = .type$EQUALS,
-          EQUALS = lyst(
-            LOOKAHEAD = .type$EXPRESSION
+        FUNCTION_NAME = lyst(
+          IDENTIFIER = lyst(
+            REDUCE = list(from = c(FILE_REFERENCE, to = FUNCTION_NAME))
+          ),
+          LPAREN = lyst(
+            SHIFT = TRUE,
+            RPAREN = lyst(
+              REDUCE = list(from = LPAREN, to = ARGUMENT_LIST)
+            ),
+            REXPRESSION = lyst(
+              REDUCE = list(from = LPAREN, to = ARGUMENT_LIST)
+            ),
+            IDENTIFIER = lyst(
+              REDUCE = list(from = LPAREN, to = ARGUMENT_LIST)
+            )
+          ),
+          ARGUMENT_LIST = lyst(
+            RPAREN = lyst(
+              SHIFT = TRUE,
+              IDENTIFIER = lyst(
+                REDUCE = list(from = c(FILE_REFERENCE, FUNCTION_NAME, ARGUMENT_LIST, RPAREN),
+                              to = FUNCTION_REFERENCE)
+              )
+            ),
+            IDENTIFIER = lyst(
+              SHIFT = TRUE,
+              ASSIGN_OPERATOR = lyst(
+                REDUCE = list(from = IDENTIFIER, to = PARAMETER_NAME)
+              ),
+              IDENTIFIER = lyst(
+                REDUCE = list(from = IDENTIFIER, to = REXPRESSION)
+              ),
+              RPAREN = lyst(
+                REDUCE = list(from = IDENTIFIER, to = REXPRESSION)
+              )
+            ),
+            REXPRESSION = lyst(
+              SHIFT = TRUE,
+              IDENTIFIER = lyst(
+                REDUCE = list(from = REXPRESSION, to = ARGUMENT)
+              ),
+              REXPRESSION = lyst(
+                REDUCE = list(from = REXPRESSION, to = ARGUMENT)
+              ),
+              RPAREN = lyst(
+                REDUCE = list(from = c(ARGUMENT_LIST, ARGUMENT),
+                              to = ARGUMENT_LIST)
+              )
+            ),
+            PARAMETER_NAME = lyst(
+              ASSIGN_OPERATOR = lyst(
+                SHIFT = TRUE,
+                REXPRESSION = lyst(
+                  SHIFT = TRUE,
+                  IDENTIFIER = lyst(
+                    REDUCE = list(from = c(PARAMETER_NAME, ASSIGN_OPERATOR, REXPRESSION),
+                                  to = ARGUMENT)
+                  ),
+                  REXPRESSION = lyst(
+                    REDUCE = list(from = c(PARAMETER_NAME, ASSIGN_OPERATOR, REXPRESSION),
+                                  to = ARGUMENT)
+                  )
+                )
+              )
+            ),
+            ARGUMENT = lyst(
+              IDENTIFIER = lyst(
+                REDUCE = list(from = c(ARGUMENT_LIST, ARGUMENT),
+                              to = ARGUMENT_LIST)
+              ),
+              REXPRESSION = lyst(
+                REDUCE = list(from = c(ARGUMENT_LIST, ARGUMENT),
+                              to = ARGUMENT_LIST)
+              ),
+              RPAREN = lyst(
+                REDUCE = list(from = c(ARGUMENT_LIST, ARGUMENT),
+                              to = ARGUMENT_LIST)
+              )
+            )
           )
         )
-      )
-    ),
-    DECORATOR = lyst(
-      DECORATEE = lyst(
-        LOOKAHEAD = .type$ASSIGNOP,
-        ASSIGNOP = lyst(
-          LOOKAHEAD = .type$FUNCTION_STMT
+      ),
+      FUNCTION_REFERENCE = lyst(
+        IDENTIFIER = lyst(
+          REDUCE = list(from = FUNCTION_REFERENCE, to = DECORATOR)
+        )
+      ),
+      FUNCTION_NAME = lyst(
+        ASSIGN_OPERATOR = lyst(
+          SHIFT = TRUE,
+          IDENTIFIER = lyst(
+            SHIFT = TRUE,
+            REXPRESSION = lyst(
+              REDUCE = list(from = IDENTIFIER, to = FUNCTION_REFERENCE)
+            ),
+            FUNCTION_REFERENCE = lyst(
+              REXPRESSION = lyst(
+                REDUCE = list(from = c(FUNCTION_NAME, ASSIGN_OPERATOR, FUNCTION_REFERENCE),
+                              to = DECORATEE)
+              ),
+              TINSEL_COMMENT = lyst(
+                REDUCE = list(from = c(FUNCTION_NAME, ASSIGN_OPERATOR, FUNCTION_REFERENCE),
+                              to = DECORATEE)
+              )
+            )
+          ),
+          FUNCTION_OPERATOR = lyst(
+            SHIFT = TRUE,
+            LPAREN = lyst(
+              SHIFT = TRUE,
+              RPAREN = lyst(
+                REDUCE = list(from = LPAREN, to = PARAMETER_LIST)
+              ),
+              IDENTIFIER = lyst(
+                REDUCE = list(form = LPAREN, to = PARAMETER_LIST)
+              )
+            ),
+            PARAMETER_LIST = lyst(
+              PARAMETER = lyst(
+                RPAREN = lyst(
+                  REDUCE = list(from = c(PARAMETER_LIST, PARAMETER),
+                                to = PARAMETER_LIST)
+                )
+              ),
+              IDENTIFIER = lyst(
+                SHIFT = TRUE,
+                ASSIGN_OPERATOR = lyst(
+                  REDUCE = list(from = IDENTIFIER, to = PARAMETER_NAME)
+                )
+              ),
+              PARAMETER_NAME = lyst(
+                ASSIGN_OPERATOR = lyst(
+                  SHIFT = TRUE,
+                  REXPRESSION = lyst(
+                    SHIFT = TRUE,
+                    RPAREN = lyst(
+                      REDUCE = list(from = c(PARAMETER_NAME, ASSIGN_OPERATOR, REXPRESSION),
+                                    to = PARAMETER)
+                    )
+                  )
+                )
+              ),
+              RPAREN = lyst(
+                SHIFT = TRUE,
+                REXPRESSION = lyst(
+                  REDUCE = list(from = c(PARAMETER_LIST, RPAREN),
+                                to = PARAMETER_LIST)
+                )
+              ),
+              REXPRESSION = lyst(
+                SHIFT = TRUE,
+                REXPRESSION = lyst(
+                  REDUCE = list(from = c(FUNCTION_OPERATOR, PARAMETER_LIST, REXPRESSION),
+                                to = FUNCTION_DEFINITION)
+                )
+              )
+            )
+          ),
+          FUNCTION_DEFINITION = lyst(
+            REXPRESSION = lyst(
+              REDUCE = list(from = c(FUNCTION_NAME, ASSIGN_OPERATOR, FUNCTION_DEFINITION),
+                            to = DECORATEE)
+            )
+          )
+        ),
+        IDENTIFIER = lyst(
+          SHIFT = TRUE
+        )
+      ),
+      DECORATOR = lyst(
+        IDENTIFIER = lyst(
+          REDUCE = list(from = c(DECORATORS, DECORATOR), to = DECORATORS)
         )
       )
     )
   )
-)
+))
 
-parse_tbl <- function() {
-  tbl <- as.data.frame(rbind(
-    list(~ list(), .type$TINSEL_COMMENT, ~ NULL),
-    list(~ .type$TINSEL_COMMENT, .type$IDENTIFIER, .type$DECORATOR ~ .type$TINSEL_COMMENT),
-    list(~ .type$DECORATORS, .type$IDENTIFIER, ~ NULL),
-    list(~ .type$DECORATORS + .type$IDENTIFIER, .type$FILE_ACCESSOR, .type$FILE_NAME ~ .type$IDENTIFIER),
-    list(~ .type$DECORATORS + .type$FILE_NAME, .type$FILE_ACCESSOR, ~ NULL),
-    list(~ .type$DECORATORS + .type$FILE_NAME + .type$FILE_ACCESSOR, .type$IDENTIFIER, .type$FILE_REFERENCE ~ .type$FILE_NAME + .type$FILE_ACCESSOR),
-    list(~ .type$DECORATORS + .type$FILE_REFERENCE, .type$IDENTIFIER, ~ NULL),
-    list(~ .type$DECORATORS + .type$FILE_REFERENCE + .type$IDENTIFIER, .type$IDENTIFIER, .type$FUNCTION_NAME ~ .type$IDENTIFIER),
-    list(~ .type$DECORATORS + .type$FILE_REFERENCE + .type$FUNCTION_NAME, .type$IDENTIFIER, .type$FUNCTION_REFERENCE ~ .type$FILE_REFERENCE + .type$FUNCTION_NAME),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE, .type$LPAREN, ~ NULL),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$LPAREN, .type$IDENTIFIER, .type$ARGUMENTS ~ .type$LPAREN),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS, .type$IDENTIFIER, ~ NULL),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$IDENTIFIER, .type$EQUALS, ~ NULL),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$IDENTIFIER + .type$EQUALS, .type$EXPRESSION, ~ NULL),
-    list(
-      ~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$IDENTIFIER + .type$EQUALS + .type$EXPRESSION,
-      .type$IDENTIFIER,
-      .type$ASSIGNMENT ~ .type$IDENTIFIER + .type$EQUALS + .type$EXPRESSION
-    ),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$ASSIGNMENT, .type$IDENTIFIER, .type$ARGUMENTS ~ .type$ARGUMENTS + .type$ASSIGNMENT),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS, .type$EXPRESSION, ~ NULL),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$EXPRESSION, .type$IDENTIFIER, .type$ARGUMENTS ~ .type$ARGUMENTS + .type$EXPRESSION),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS, .type$RPAREN, ~ NULL),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS + .type$RPAREN, .type$TINSEL_COMMENT, .type$ARGUMENTS ~ .type$ARGUMENTS + .type$RPAREN),
-    list(~ .type$DECORATORS + .type$FUNCTION_REFERENCE + .type$ARGUMENTS, .type$TINSEL_COMMENT, .type$DECORATOR ~ .type$FUNCTION_REFERENCE + .type$ARGUMENTS),
-    list(~ .type$DECORATORS + .type$DECORATOR, .type$TINSEL_COMMENT, .type$DECORATORS ~ .type$DECORATORS + .type$DECORATOR),
-    list(~ .type$DECORATORS + .type$DECORATOR, .type$IDENTIFIER, .type$DECORATORS ~ .type$DECORATORS + .type$DECORATORS),
-    list(~ .type$DECORATORS + .type$IDENTIFIER, .type$ASSIGNOP, .type$IDENTIFIER ~ .type$DECORATEE),
-    list(~ .type$DECORATORS + .type$DECORATOR + .type$DECORATEE, .type$ASSIGNOP, ~ NULL),
-    list(~ .type$DECORATORS + .type$DECORATOR + .type$DECORATEE + .type$ASSIGNOP, .type$FUNCTION_STMT, ~ NULL),
-    list(~ .type$DECORATORS + .type$DECORATOR + .type$DECORATEE + .type$ASSIGNOP + .type$FUNCTION_STMT, .type$LPAREN, c(NULL, NULL))
-  ))
-  colnames(tbl) <- c('ParseStack', 'LookAhead', 'ParserAction')
-  tbl
-}
-
-# start => S
-#
-# S => A | A S
-#
-# A => B | C
-#
-# B => D E | E
-#
-# C => `identifier`
-#
-# D => G | G G
-#
-# E => `R expression`
-#
-# G => H I J | H J |
-#
-# H => #.
-#
-# I => J | M
-#
-# J => N K L
-#
-# K => P Q R | M
-#
-# L => `$`
-#
-# M => `nil`
-#
-# N => O | M
-#
-# O => `file`
-#
-# P => `[`
-#
-# Q => `digit` | `digit`P
-#
-# R => `]`
-#
-# U => V | W
-#
-# V => `package`::`function` | `function`
-#
-# W => X Y Z | M
-#
-# X => `(`
-#
-# Y => AA | M
-#
-# Z => `)`
-#
-# AA => E | E BB
-#
-# BB => `,`
-
+# Program => StatementList
+# StatementList => StatementList Statement | Statement
+# Statement => TinselStatement | RExpression
+# TinselStatement => Decorators Decoratee
+# Decorators => Decorators Decorator | Decorator
+# Decorator => #. FileReference FunctionReference
+# FileReference => FileName $ | <empty>
+# FunctionReference => Identifier ( ArgumentList ) | Identifier
+# Identifier => SyntacticName | NonsyntacticName
+# ArgumentList => ArgumentList, Argument | Argument, ArgumentList | Argument
+# Argument => ParameterName = ArgumentValue | ArgumentValue
+# ArgumentValue => RExpression | <empty>
+# Decoratee => Identifier AssignOp FunctionCall
+# FunctionCall => FunctionDefinition | FunctionReference
+# FunctionDefinition => FunctionOp ( Parameters ) RExpression
+# Parameters => ParameterList | <empty>
+# ParameterList => ParameterList, Parameter | Parameter
+# Parameter => ParameterName = ParameterDefault | ParameterName
+# ParameterName => Identifier
+# ParameterDefault => RExpression
+# FunctionOp => "function"
+# AssignOp => "=" | "<-"
 
 
 ### Examples
@@ -205,5 +287,3 @@ parse_tbl <- function() {
 
 # #. FileA:export1
 # function
-
-
