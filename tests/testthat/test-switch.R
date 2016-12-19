@@ -19,9 +19,9 @@ test_that('if_symbol()', {
 })
 
 test_that('if_type()', {
-  expect_equal(if_type(99, UNKNOWN = -1), -1)
-  expect_equal(if_type(1, FILE_REFERENCE = function() 777), 777)
+  expect_equal(if_type(99, LOOKAHEAD = -1), -1)
+  expect_equal(if_type(1, PROGRAM = function() 777), 777)
   lokal <- 'hello, world'
   focal <- function() paste0(lokal, '!')
-  expect_equal(if_type(3, DECORATOR = focal), 'hello, world!')
+  expect_equal(if_type(3, STATEMENT = focal), 'hello, world!')
 })

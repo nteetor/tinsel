@@ -10,15 +10,15 @@ test_that('token constructor', {
   expect_equal(coin$lineno, 1)
 })
 
-test_that('as.character and print S3 generics', {
+test_that('format and print S3 generics', {
   coin <- token('50p', 99, 1)
 
-  expect_equal(as.character(coin), '("50p" UNKNOWN)')
-  expect_output(print(coin), '("50p" UNKNOWN)')
+  expect_equal(format(coin), '("50p" LOOKAHEAD)')
+  expect_output(print(coin), '("50p" LOOKAHEAD)')
 
   bit <- token('doge', 101, 1)
 
-  expect_equal(as.character(bit), '("doge" 101)')
+  expect_equal(format(bit), '("doge" 101)')
 })
 
 test_that('type S3 generic', {

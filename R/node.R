@@ -1,19 +1,21 @@
 is.node <- function(x) inherits(x, 'node')
 
-as.character.node <- function(x, ...) {
-  paste(as.character(x$token), sprintf('[%d]', length(x$children)))
+summary.node <- function(x, ..., width = 30) {
+  chldrn <- paste0(' [', length(x$children), ']')
+  paste0(summary(x$token, width = width - nchar(chldrn)), chldrn)
 }
 
-print.node <- function(x, ...) {
+format.node <- function(x, ..., width = 30) {
   smry <- '# A node:'
-  chtok <- as.character(x$token)
-  hdr <- sprintf(paste0('%', nchar(chtok), 's'), paste0('<', class(x$token), '>'))
-  bdy <- paste(hdr, as.character(x$token), sep = '\n')
+  bdy <- format(x$token, width = width)
+  hdr <- sprintf(paste0('%', nchar(bdy), 's'), '<token>')
   chldrn <- paste('# ... with', x$children$size(), if (x$children$size() == 1)
-                 'child' else 'children')
-  tom(smry)
-  tom(bdy)
-  if (length(x$children)) tom(chldrn)
+    'child' else 'children')
+  paste(smry, hdr, bdy, chldrn, sep = '\n')
+}
+
+print.node <- function(x, ..., width = 30) {
+  cat(format(x, width = width))
   invisible(x)
 }
 
@@ -35,17 +37,18 @@ type.node <- function(x, recursive = FALSE, ...) {
   } else if (length(x$children) == 0) {
     type(x$token)
   } else {
-    # while running tests one of these factors caused the following line to
+    # While running tests one of these factors caused the line of code below to
     # fail:
-    #   1. runing on linux and windows (not osx)
-    #   2. non-interactive session
-    #   3. travis-ci and appveyor
-    # the fix was to explicitly call as.list.stack on x$children prior to the
-    # fix the following error was raised,
+    #   1. running tests on linux and windows (not osx)
+    #   2. tests run in a non-interactive session
+    #   3. test run on travis-ci and appveyor
+    # the fix was to explicitly call as.list.stack on x$children.
+    #
+    # Prior to the fixing the issue the following error was raised,
     # "cannot coerce environment to vector of type list"
     # on osx in an interactive session devtools::check() reported no errors
-    # running the tests when *only* using as.list vs the explicity
-    # as.list.stack
+    # running the tests when *only* using as.list vs explicity calling
+    # as.list.stack.
     unlist(c(type(x$token), lapply(as.list.stack(x$children), type.node)))
   }
 }

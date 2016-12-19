@@ -13,9 +13,9 @@ dimple <- function(x, ..., indent = 0, every = 2) {
   )
 }
 
-trunk <- function(.string, n, suffix = '..') {
-  if (nchar(.string) > n) {
-    paste0(substr(.string, 1, n - nchar(suffix)), suffix)
+trunk <- function(.string, width, suffix = '..') {
+  if (nchar(.string) > width) {
+    paste0(substr(.string, 1, width - nchar(suffix)), suffix)
   } else {
     .string
   }

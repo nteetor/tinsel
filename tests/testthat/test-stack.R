@@ -80,10 +80,22 @@ test_that('as.character and print S3 generic', {
   shack <- stack()
   shack$push(10)$push(20)
 
-  expect_equal(as.character(shack), '[ {20}, {10} ]')
-  expect_output(print(shack), '# A stack: 2 \n1\\s+20 <numeric>\n2\\s+10 <numeric>')
-  expect_output(print(shack, n = 1), '# A stack: 2 \n1\\s+20 <numeric>\n# ... with 1 more items')
+  expect_equal(summary(shack), list(20, 10))
+  expect_equal(summary(stack()), list())
 
-  expect_equal(as.character(stack()), '[ ]')
+  expect_output(print(shack),
+                paste(
+                  '# A stack: 2',
+                  '1 20 <numeric>',
+                  '2 10 <numeric>',
+                  sep = '\n'
+                ))
+  expect_output(print(shack, n = 1),
+                paste(
+                  '# A stack: 2',
+                  '1 20 <numeric>',
+                  '# ... with 1 more item',
+                  sep = '\n'
+                ))
   expect_output(print(stack()), '# A stack: 0')
 })

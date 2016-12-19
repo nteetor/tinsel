@@ -6,10 +6,9 @@ test_that('constructor', {
   expect_s3_class(police, 'scanner')
   expect_true(is.scanner(police))
   expect_fields(police, 'stream', 'tokens')
-  expect_methods(police, 'comment', 'comments', 'dcall', 'decoration',
-                 'dreference', 'filename', 'identifier', 'nonsyntactic',
-                 'syntactic', 'quotation', 'number', 'tokenize', 'assignment',
-                 'expect')
+  expect_methods(police, 'comment', 'filename', 'identifier',
+                 'nonsyntactic', 'syntactic', 'quotation', 'number',
+                 'tokenize', 'assignment', 'expect', 'expression', 'extract')
   expect_s3_class(police$tokens, 'stack')
   expect_s3_class(police$stream, 'traversal')
 })

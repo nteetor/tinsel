@@ -67,8 +67,7 @@ traversal <- function(file) {
   }
 
   self$skipws <- function() {
-    while (re_match(self$getchar(), '\\h')) {}
-    self$decrement_cursor()
+    while (re_match(self$peek(), .sym$WHITESPACE)) self$increment_cursor()
   }
 
   class(self) <- 'traversal'

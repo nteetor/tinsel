@@ -23,46 +23,53 @@ as.list.stack <- function(x, ...) {
   )
 }
 
-print.stack <- function(x, ..., n = 10) {
-  smry <- sprintf('# A stack: %d', x$size())
-  if (x$size() == 0) {
-    cat(smry)
-    return(invisible(x))
-  }
-  elements <- as.list(x)[1:min(n, x$size())]
-  vals <- vapply(elements, function(e) as.character(e), character(1))
-  clsss <- vapply(elements, function(e) class(e), character(1))
-  wdths <-
-    vapply(vals, nchar, numeric(1)) +
-    vapply(seq_along(elements), nchar, numeric(1))
-  mxwdth <- max(max(wdths), 4) + nchar(n)
-  bdy <- paste0(
-    vapply(
-      seq_along(vals),
-      function(i) {
-        frmt <- paste0('%d%', mxwdth - nchar(i), 's <%s>')
-        sprintf(frmt, i, vals[i], clsss[i])
-      },
-      character(1)
-    ),
-    collapse = '\n'
-  )
-  if (x$size() > n) {
-    bdy <- paste0(bdy, paste('\n# ... with', x$size() - n, 'more items'))
-  }
-  cat(smry, '\n')
-  cat(bdy, '\n')
-  return(invisible(x))
+summary.stack <- function(x, ..., width = 30) {
+  if (length(x) == 0) return(list())
+  lapply(as.list(x),
+         function(s) {
+           if (is.atomic(s)) {
+             s
+           } else {
+             if (length(summary(s)) == 1) {
+               summary(s, width = width)
+             } else {
+               s
+             }
+           }
+         })
 }
 
-as.character.stack <- function(x, ...) {
-  if (x$size() == 0) return('[ ]')
-  paste(
-    '[',
-    paste('{', vapply(as.list(x), as.character, character(1)), '}',
-          collapse = ', ', sep = ''),
-    ']'
+format.stack <- function(x, ..., n = 10, width = 30) {
+  smry <- sprintf('# A stack: %d', length(x))
+
+  if (length(x) == 0) return(smry)
+
+  selected <- as.list(head(x, n))
+  indeces <- seq_along(selected)
+  summaries <- vapply(
+    summary(head(x, n), width = width),
+    function(s) if (is.atomic(s)) as.character(s) else '..',
+    character(1)
   )
+  classes <- vapply(selected, class, character(1))
+  pformat <- paste0('%-', max(nchar(indeces)) + 1,'s',
+                    '%', max(nchar(summaries)), 's',
+                    ' <%s>')
+
+  bdy <- paste0(sprintf(pformat, indeces, summaries, classes), collapse = '\n')
+
+  output <- paste(smry, bdy, sep = '\n')
+  if (n < length(x)) {
+    d <- length(x) - n
+    footer <- paste('# ... with', d, 'more', if (d == 1) 'item' else 'items')
+    output <- paste(output, footer, sep = '\n')
+  }
+  output
+}
+
+print.stack <- function(x, ..., n = 10, width = 30) {
+  cat(format(x, n = n, width = width))
+  invisible(x)
 }
 
 stack <- function(list = NULL) {

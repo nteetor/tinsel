@@ -5,9 +5,8 @@ test_that('parser constructor', {
 
   expect_s3_class(tinyser, 'parser')
   expect_true(is.parser(tinyser))
-  expect_fields(tinyser, 'scanner', 'tokens', 'table', 'stack', 'tree')
-  expect_methods(tinyser, 'expect', 'parse', 'S', 'A', 'B', 'C', 'D', 'E', 'G',
-                 'H', 'I')
+  expect_fields(tinyser, 'scanner', 'tokens', 'lookup', 'parsed')
+  expect_methods(tinyser, 'parse', 'shift', 'reduce', 'step')
 })
 
 test_that('parse internal method', {

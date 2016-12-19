@@ -1,13 +1,23 @@
 is.token <- function(x) inherits(x, 'token')
 
-as.character.token <- function(x, ...) {
-  lbl <- if (x$type %in% .type) names(which(.type == x$type)) else x$type
-  val <- trunk(as.character(x$contents), 10)
-  sprintf('("%s" %s)', val, lbl)
+summary.token <- function(x, ..., width = 30) {
+  trunk(format(x, ...), width = 30)
 }
 
-print.token <- function(x, ...) {
-  tom(as.character(x))
+format.token <- function(x, ..., width = 30) {
+  lbl <- if (x$type %in% .type) names(which(.type == x$type)) else x$type
+  cntnt <- as.character(x$contents)
+
+  if (nchar(lbl) > width - 3) {
+    lbl <- trunk(lbl, width - 3)
+    cntnt <- '..'
+  }
+
+  sprintf('("%s" %s)', cntnt, lbl)
+}
+
+print.token <- function(x, ..., width = 30) {
+  tom(format(x, width = width))
 }
 
 type <- function(x, ...) UseMethod('type')

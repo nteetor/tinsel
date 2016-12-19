@@ -49,15 +49,15 @@ test_that('contents S3 method', {
   expect_equal(contents(leaf$add(token('syrup', 1, 1))), c('maple', 'syrup'))
 })
 
-test_that('as.character and print S3 methods', {
-  leaf <- node(token('maple', .type$STRING, 1))
+test_that('format and print S3 methods', {
+  leaf <- node(token('maple', .type$REXPRESSION, 1))
   leaf$add(token('star', .type$IDENTIFIER, 1))
 
-  expect_equal(as.character(leaf), '("maple" STRING) [1]')
+  expect_equal(summary(leaf), '("maple" REXPRESSION) [1]')
   expect_output(print(leaf), paste(
     '# A node:',
-    '         <token>',
-    '("maple" STRING)',
+    '              <token>',
+    '("maple" REXPRESSION)',
     '# ... with 1 child',
     sep = '\n'
   ), fixed = TRUE)
